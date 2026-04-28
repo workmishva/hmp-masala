@@ -6,7 +6,6 @@ import Order from '@/models/Order'
 import Settings from '@/models/Settings'
 import { generateResetReportPDF } from '@/lib/pdf-report'
 
-export const runtime = 'nodejs'
 
 export async function POST() {
   const session = await auth()

@@ -5,7 +5,6 @@ import { connectDB } from '@/lib/db'
 import Order from '@/models/Order'
 import { generateOrdersExcelBuffer } from '@/lib/excel'
 
-export const runtime = 'nodejs'
 
 export async function GET() {
   const session = await auth()
