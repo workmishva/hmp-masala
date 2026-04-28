@@ -1,0 +1,52 @@
+import { NextResponse } from 'next/server'
+import { format } from 'date-fns'
+import { auth } from '@/lib/auth'
+import { connectDB } from '@/lib/db'
+import Order from '@/models/Order'
+import { generateOrdersExcelBuffer } from '@/lib/excel'
+
+export const runtime = 'nodejs'
+
+export async function GET() {
+  const session = await auth()
+  if (!session || session.user.role !== 'admin') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  try {
+    await connectDB()
+
+    const orders = await Order.find({ isVerified: true })
+      .sort({ createdAt: -1 })
+      .populate('userId', 'name email')
+      .lean()
+
+    const rows = orders.map((o) => {
+      const user = o.userId as unknown as { name?: string; email?: string } | null
+      return {
+        orderId:          `HMP-${o._id.toString().slice(-8).toUpperCase()}`,
+        verificationCode: o.verificationCode,
+        customerName:     user?.name ?? 'Unknown',
+        customerEmail:    user?.email ?? 'Unknown',
+        items:            o.items.map((i) => `${i.name} x${i.qty}`).join(', '),
+        totalAmount:      o.totalAmount,
+        deliveryAddress:  o.deliveryAddress,
+        status:           o.status,
+        placedAt:         format(new Date(o.createdAt), 'dd MMM yyyy HH:mm'),
+      }
+    })
+
+    const buffer = generateOrdersExcelBuffer(rows)
+    const filename = `hmp-orders-${format(new Date(), 'yyyy-MM-dd')}.xlsx`
+
+    return new NextResponse(new Uint8Array(buffer), {
+      status: 200,
+      headers: {
+        'Content-Type':        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': `attachment; filename="${filename}"`,
+      },
+    })
+  } catch {
+    return NextResponse.json({ error: 'Failed to generate export' }, { status: 500 })
+  }
+}

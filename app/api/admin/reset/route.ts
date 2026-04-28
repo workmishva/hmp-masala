@@ -1,0 +1,105 @@
+import { NextResponse } from 'next/server'
+import { format, subDays } from 'date-fns'
+import { auth } from '@/lib/auth'
+import { connectDB } from '@/lib/db'
+import Order from '@/models/Order'
+import Settings from '@/models/Settings'
+import { generateResetReportPDF } from '@/lib/pdf-report'
+
+export const runtime = 'nodejs'
+
+export async function POST() {
+  const session = await auth()
+  if (!session || session.user.role !== 'admin') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  try {
+    await connectDB()
+
+    // Gather analytics before reset
+    const settings = await Settings.findOne().lean()
+    const periodFrom = settings?.lastResetAt ?? null
+    const periodTo   = new Date()
+
+    const [orders] = await Promise.all([
+      Order.find({ isVerified: true })
+        .populate('userId', 'name email')
+        .lean(),
+    ])
+
+    const totalOrders  = orders.length
+    const totalRevenue = orders.reduce((s, o) => s + o.totalAmount, 0)
+
+    // Status breakdown
+    const statusMap: Record<string, number> = {}
+    for (const o of orders) {
+      statusMap[o.status] = (statusMap[o.status] ?? 0) + 1
+    }
+    const statusBreakdown = Object.entries(statusMap).map(([status, count]) => ({ status, count }))
+
+    // Top products
+    const productMap: Record<string, { name: string; qty: number; revenue: number }> = {}
+    for (const o of orders) {
+      for (const item of o.items) {
+        const key = item.name
+        if (!productMap[key]) productMap[key] = { name: item.name, qty: 0, revenue: 0 }
+        productMap[key].qty     += item.qty
+        productMap[key].revenue += item.price * item.qty
+      }
+    }
+    const topProducts = Object.values(productMap)
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 10)
+
+    // Daily summary for last 14 days
+    const dailyMap: Record<string, { orders: number; revenue: number }> = {}
+    for (let d = 13; d >= 0; d--) {
+      dailyMap[format(subDays(periodTo, d), 'dd MMM')] = { orders: 0, revenue: 0 }
+    }
+    for (const o of orders) {
+      const day = format(new Date(o.createdAt), 'dd MMM')
+      if (dailyMap[day]) {
+        dailyMap[day].orders  += 1
+        dailyMap[day].revenue += o.totalAmount
+      }
+    }
+    const dailySummary = Object.entries(dailyMap).map(([date, d]) => ({ date, ...d }))
+
+    // Generate PDF
+    const pdfBuffer = generateResetReportPDF({
+      generatedAt:     new Date(),
+      periodFrom,
+      periodTo,
+      totalOrders,
+      totalRevenue,
+      topProducts,
+      statusBreakdown,
+      dailySummary,
+    })
+
+    // Perform reset: delete all verified orders, update lastResetAt
+    await Promise.all([
+      Order.deleteMany({ isVerified: true }),
+      Settings.findOneAndUpdate(
+        {},
+        { lastResetAt: new Date() },
+        { upsert: true, new: true }
+      ),
+    ])
+
+    const filename = `hmp-reset-report-${format(new Date(), 'yyyy-MM-dd')}.pdf`
+
+    return new NextResponse(new Uint8Array(pdfBuffer), {
+      status: 200,
+      headers: {
+        'Content-Type':        'application/pdf',
+        'Content-Disposition': `attachment; filename="${filename}"`,
+        'X-Reset-Complete':    '1',
+      },
+    })
+  } catch (err) {
+    console.error('Reset failed:', err)
+    return NextResponse.json({ error: 'Reset failed' }, { status: 500 })
+  }
+}

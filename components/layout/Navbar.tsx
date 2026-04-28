@@ -1,0 +1,43 @@
+import { Suspense } from 'react'
+import Link from 'next/link'
+import { auth } from '@/lib/auth'
+import { NavbarClient } from './NavbarClient'
+
+async function NavbarAuthState() {
+  const session = await auth()
+  return (
+    <NavbarClient
+      userName={session?.user?.name ?? undefined}
+      userRole={session?.user?.role ?? undefined}
+    />
+  )
+}
+
+function NavbarAuthFallback() {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 rounded-xl bg-masala-100 animate-pulse" />
+      <div className="hidden md:block w-20 h-8 rounded-xl bg-masala-100 animate-pulse" />
+    </div>
+  )
+}
+
+export function Navbar() {
+  return (
+    <header className="sticky top-0 z-50 bg-white/95 dark:bg-masala-100/95 backdrop-blur-sm border-b border-masala-200">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between relative">
+        {/* Logo — always static, renders instantly */}
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <span className="text-2xl font-brand font-bold text-saffron-600 tracking-tight">
+            HMP Masala
+          </span>
+        </Link>
+
+        {/* Auth-dependent section streams in via Suspense */}
+        <Suspense fallback={<NavbarAuthFallback />}>
+          <NavbarAuthState />
+        </Suspense>
+      </div>
+    </header>
+  )
+}
