@@ -139,3 +139,13 @@ body {
 .dark .bg-white\/95 {
   background-color: color-mix(in srgb, var(--color-masala-100) 95%, transparent) !important;
 }
+
+/* Hero image strip — infinite scroll (pure CSS, no JS) */
+@keyframes hero-scroll-left {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes hero-scroll-right {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}

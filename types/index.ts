@@ -72,6 +72,17 @@ export interface ISettings {
   storeName: string
 }
 
+export interface IReview {
+  _id:       string
+  userId:    string
+  productId: string
+  orderId:   string
+  rating:    number
+  comment:   string
+  createdAt: Date
+  userName?: string
+}
+
 export interface ApiSuccess<T = unknown> {
   data: T
 }

@@ -59,21 +59,23 @@ export function ProductFilters() {
                 : 'text-masala-700 hover:bg-masala-100'
             }`}
           >
-            🌶️ All Products
+            All Products
           </button>
           {PRODUCT_CATEGORIES.map((cat) => {
             const meta = CATEGORY_META[cat]
+            const Icon = meta?.icon
             return (
               <button
                 key={cat}
                 onClick={() => updateParam('category', currentCategory === cat ? '' : cat)}
-                className={`w-full text-left text-sm px-3 py-2 rounded-xl transition-colors ${
+                className={`flex items-center gap-2 w-full text-left text-sm px-3 py-2 rounded-xl transition-colors ${
                   currentCategory === cat
                     ? 'bg-saffron-100 text-saffron-700 font-semibold'
                     : 'text-masala-700 hover:bg-masala-100'
                 }`}
               >
-                {meta?.emoji ?? '•'} {cat}
+                {Icon && <Icon size={14} strokeWidth={2} className="shrink-0" />}
+                {cat}
               </button>
             )
           })}

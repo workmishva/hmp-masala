@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { MessageCircle, Save, Settings2, AlertTriangle, Download, Trash2, X } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -116,6 +117,7 @@ function ResetModal({ onConfirm, onCancel, resetting }: {
 }
 
 export default function AdminSettingsPage() {
+  const router = useRouter()
   const [settings, setSettings]     = useState<Settings | null>(null)
   const [loading, setLoading]       = useState(true)
   const [saving, setSaving]         = useState(false)
@@ -142,6 +144,7 @@ export default function AdminSettingsPage() {
       const data = await res.json()
       if (!res.ok) { toast.error(data.error ?? 'Failed to save'); return }
       toast.success('Settings saved!')
+      router.refresh()
     } catch {
       toast.error('Failed to save settings')
     } finally {

@@ -64,7 +64,17 @@ export async function PUT(req: Request) {
     }
 
     await user.save()
-    return NextResponse.json({ data: { success: true } })
+    // Return the saved document so the client can sync state from real DB values
+    return NextResponse.json({
+      data: {
+        _id:     user._id.toString(),
+        name:    user.name,
+        email:   user.email,
+        phone:   user.phone,
+        address: user.address ?? '',
+        role:    user.role,
+      },
+    })
   } catch {
     return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 })
   }

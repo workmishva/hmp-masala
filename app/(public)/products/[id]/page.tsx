@@ -10,9 +10,8 @@ import { ProductTabs } from '@/components/products/ProductTabs'
 import { AnimatedGrid, AnimatedItem } from '@/components/products/AnimatedGrid'
 import { ProductGridSkeleton, Skeleton } from '@/components/ui/Skeleton'
 import { ProductActions } from '@/components/products/ProductActions'
+import { ReviewSection } from '@/components/products/ReviewSection'
 import type { IProduct } from '@/types'
-
-export const unstable_instant = { prefetch: 'static', unstable_disableValidation: true }
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -63,7 +62,7 @@ async function ProductContent({ id }: { id: string }) {
         <ChevronRight className="w-3.5 h-3.5" />
         <Link href="/products" className="hover:text-saffron-600 transition-colors">Products</Link>
         <ChevronRight className="w-3.5 h-3.5" />
-        <span className="text-masala-900 font-medium truncate max-w-[200px]">{product.name}</span>
+        <span className="text-masala-900 font-medium truncate max-w-50">{product.name}</span>
       </nav>
 
       {/* Product layout */}
@@ -103,6 +102,9 @@ async function ProductContent({ id }: { id: string }) {
           <ProductTabs description={product.description} />
         </div>
       </div>
+
+      {/* Reviews */}
+      <ReviewSection productId={product._id} />
 
       {/* Related products */}
       {related.length > 0 && (

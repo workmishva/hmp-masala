@@ -1,24 +1,20 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
-import { Leaf } from 'lucide-react'
 import { LoginForm } from './LoginForm'
 
 export const metadata: Metadata = { title: 'Login — HMP Masala' }
 
 export default function LoginPage() {
   return (
-    <div className="min-h-[90vh] flex items-center justify-center px-6 py-12">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-4">
-            <Leaf className="w-6 h-6 text-saffron-500" />
-            <span className="font-brand text-2xl font-bold text-saffron-600">HMP Masala</span>
-          </div>
-          <h1 className="font-heading text-2xl font-bold text-masala-900">Welcome back</h1>
-          <p className="text-masala-500 text-sm mt-1">Sign in to your account</p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-saffron-500/10 blur-3xl" />
+        <div className="absolute -right-32 -bottom-32 h-96 w-96 rounded-full bg-saffron-600/10 blur-3xl" />
+        <div className="absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 rounded-full bg-chili-600/5 blur-2xl" />
+      </div>
 
-        <Suspense fallback={<div className="h-64 skeleton rounded-3xl" />}>
+      <div className="relative z-10 w-full max-w-md">
+        <Suspense fallback={<div className="h-96 skeleton rounded-3xl" />}>
           <LoginForm />
         </Suspense>
       </div>

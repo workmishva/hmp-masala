@@ -18,19 +18,46 @@ async function seed() {
   const { default: Product }  = await import('../models/Product')
   const { default: Settings } = await import('../models/Settings')
 
-  // Admin user
-  const existing = await User.findOne({ email: 'admin@hmpmasala.com' })
-  if (!existing) {
-    await User.create({
-      name:     'HMP Admin',
-      email:    'admin@hmpmasala.com',
-      phone:    '9999999999',
-      password: await bcrypt.hash('Admin@1234', 12),
-      role:     'admin',
-    })
-    console.log('Admin created: admin@hmpmasala.com / Admin@1234')
+  // Admin user — upsert so re-running always keeps credentials in sync.
+  // Strategy:
+  //   1. If target email already exists → promote it to admin + set new password.
+  //   2. Else find any existing admin → rename email + set new password.
+  //   3. Neither found → create fresh admin.
+  // Any other admin with a different email is demoted to enduser.
+  const TARGET_EMAIL = 'mishvapanchani17@gmail.com'
+  const hash         = await bcrypt.hash('DMVJ@hmp1730', 12)
+
+  const byEmail = await User.findOne({ email: TARGET_EMAIL })
+  if (byEmail) {
+    // Target email already exists — just promote + re-hash password
+    await User.updateOne(
+      { _id: byEmail._id },
+      { $set: { role: 'admin', password: hash } }
+    )
+    console.log('Admin promoted/updated → mishvapanchani17@gmail.com')
+    // Demote any other admin accounts
+    await User.updateMany(
+      { role: 'admin', _id: { $ne: byEmail._id } },
+      { $set: { role: 'enduser' } }
+    )
   } else {
-    console.log('Admin already exists')
+    const existingAdmin = await User.findOne({ role: 'admin' })
+    if (existingAdmin) {
+      await User.updateOne(
+        { _id: existingAdmin._id },
+        { $set: { email: TARGET_EMAIL, password: hash } }
+      )
+      console.log('Admin email + password updated → mishvapanchani17@gmail.com')
+    } else {
+      await User.create({
+        name:     'HMP Admin',
+        email:    TARGET_EMAIL,
+        phone:    '7984904156',
+        password: hash,
+        role:     'admin',
+      })
+      console.log('Admin created → mishvapanchani17@gmail.com')
+    }
   }
 
   // Settings singleton

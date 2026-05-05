@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Star } from 'lucide-react'
+import { Star, Package } from 'lucide-react'
 import { motion } from 'framer-motion'
 import type { IProduct } from '@/types'
 import { CATEGORY_META } from '@/lib/categories'
@@ -16,6 +16,7 @@ interface ProductCardProps {
 export function ProductCard({ product, priority = false, index = 0 }: ProductCardProps) {
   const hasImage = product.images.length > 0
   const meta     = CATEGORY_META[product.category]
+  const CatIcon  = meta?.icon ?? Package
   const isOOS    = product.stock === 0
 
   return (
@@ -44,14 +45,15 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-7xl select-none">
-              {meta?.emoji ?? '🌶️'}
+            <div className="w-full h-full flex items-center justify-center">
+              <CatIcon size={64} className="text-masala-200" strokeWidth={1} />
             </div>
           )}
 
           {/* Category badge — top left */}
-          <span className="absolute top-3 left-3 bg-white/90 dark:bg-masala-100/90 backdrop-blur-sm text-saffron-700 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
-            {meta?.emoji ?? ''} {product.category}
+          <span className="absolute top-3 left-3 flex items-center gap-1 bg-white/90 dark:bg-masala-100/90 backdrop-blur-sm text-saffron-700 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+            <CatIcon size={11} strokeWidth={2.5} />
+            {product.category}
           </span>
 
           {/* Star rating — top right */}

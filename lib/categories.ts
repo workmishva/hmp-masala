@@ -1,23 +1,20 @@
+import { Sprout, Wheat, Leaf, Bone, Gem } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+
 export const PRODUCT_CATEGORIES = [
   'Whole Spices',
-  'Grounded Spices',
-  'Veg Masala',
-  'Non-Veg Masala',
-  'Chai Masala',
-  'Biryani Masala',
-  'Blended Masala',
-  'Other',
+  'Grounded',
+  'Veg',
+  'Non-Veg',
+  'Namak',
 ] as const
 
-export type ProductCategory = typeof PRODUCT_CATEGORIES[number]
+export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number]
 
-export const CATEGORY_META: Record<string, { emoji: string; description: string }> = {
-  'Whole Spices':    { emoji: '🌱', description: 'Cumin, cloves, cardamom, cinnamon, bay leaves' },
-  'Grounded Spices': { emoji: '🟡', description: 'Turmeric, red chili, coriander, cumin powder' },
-  'Veg Masala':      { emoji: '🥗', description: 'Garam masala, chaat masala, pav bhaji, sambar' },
-  'Non-Veg Masala':  { emoji: '🍗', description: 'Chicken masala, meat masala, fish curry powder' },
-  'Chai Masala':     { emoji: '☕', description: 'Tea masala, ginger-cardamom blends' },
-  'Biryani Masala':  { emoji: '🍚', description: 'Biryani and pulao spice mixes' },
-  'Blended Masala':  { emoji: '✨', description: 'Special house blends and signature mixes' },
-  'Other':           { emoji: '🌶️', description: 'Specialty and seasonal spice products' },
+export const CATEGORY_META: Record<string, { icon: LucideIcon; description: string }> = {
+  'Whole Spices': { icon: Sprout, description: 'Cumin, coriander, fenugreek, fennel, carom seeds' },
+  'Grounded':     { icon: Wheat,  description: 'Turmeric, red chili, coriander-cumin powder' },
+  'Veg':          { icon: Leaf,   description: 'Garam masala, chaat masala, pav bhaji, sambar' },
+  'Non-Veg':      { icon: Bone,   description: 'Chicken masala, meat masala, fish curry powder' },
+  'Namak':        { icon: Gem,    description: 'Rock salt, black salt' },
 }

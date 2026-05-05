@@ -106,9 +106,19 @@ export default function MyOrdersPage() {
                 <div className="px-6 pb-5 border-t border-masala-100">
                   <div className="pt-4 space-y-2">
                     {order.items.map((item, i) => (
-                      <div key={i} className="flex justify-between text-sm">
+                      <div key={i} className="flex items-center justify-between text-sm gap-3">
                         <span className="text-masala-700">{item.name} × {item.qty}</span>
-                        <span className="text-masala-900 font-medium">₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="text-masala-900 font-medium">₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
+                          {order.status === 'Delivered' && (
+                            <Link
+                              href={`/products/${item.productId}#reviews`}
+                              className="text-xs text-saffron-600 hover:text-saffron-700 font-semibold underline-offset-2 hover:underline transition-colors"
+                            >
+                              Review
+                            </Link>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

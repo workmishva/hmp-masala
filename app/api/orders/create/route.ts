@@ -4,7 +4,6 @@ import { auth } from '@/lib/auth'
 import { connectDB } from '@/lib/db'
 import Cart from '@/models/Cart'
 import Order from '@/models/Order'
-import Product from '@/models/Product'
 import Settings from '@/models/Settings'
 import { generateOrderCode, buildWhatsAppUrl } from '@/lib/whatsapp'
 
@@ -78,12 +77,6 @@ export async function POST(req: Request) {
       status:           'Pending',
       paymentStatus:    'Unpaid',
     })
-
-    // Deduct stock for each product
-    for (const item of cart.items) {
-      const product = item.productId as unknown as { _id: string }
-      await Product.findByIdAndUpdate(product._id, { $inc: { stock: -item.qty } })
-    }
 
     // Clear cart
     await Cart.deleteOne({ userId: session.user.id })

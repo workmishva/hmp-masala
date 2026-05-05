@@ -2,22 +2,14 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { connection } from 'next/server'
-import { Leaf, FlameKindling, ShieldCheck, MessageCircle, ChevronRight } from 'lucide-react'
+import { Leaf, FlameKindling, ShieldCheck, ChevronRight } from 'lucide-react'
 import { connectDB } from '@/lib/db'
 import Product from '@/models/Product'
 import { HeroContent } from '@/components/home/HeroContent'
+import { CategoryStrip } from '@/components/home/CategoryStrip'
 import { ProductGridSkeleton } from '@/components/ui/Skeleton'
+import { getSettings } from '@/lib/getSettings'
 import type { IProduct } from '@/types'
-
-const CATEGORIES = [
-  { label: 'Whole Spices',    emoji: '🌱' },
-  { label: 'Grounded Spices', emoji: '🟡' },
-  { label: 'Veg Masala',      emoji: '🥗' },
-  { label: 'Non-Veg Masala',  emoji: '🍗' },
-  { label: 'Chai Masala',     emoji: '☕' },
-  { label: 'Biryani Masala',  emoji: '🍚' },
-  { label: 'Blended Masala',  emoji: '✨' },
-]
 
 const WHY_CARDS = [
   {
@@ -145,50 +137,24 @@ async function FeaturedGrid() {
   )
 }
 
-/* ── Page shell — static, no async, renders immediately ── */
-export default function HomePage() {
-  const whatsappUrl = `https://wa.me/${process.env.WHATSAPP_NUMBER ?? ''}`
+export default async function HomePage() {
+  const settings    = await getSettings()
+  const whatsappUrl = `https://wa.me/${settings.whatsappNumber || process.env.WHATSAPP_NUMBER || ''}`
 
   return (
     <div className="overflow-x-hidden">
 
       {/* ── Hero ── */}
-      <section
-        className="relative min-h-[88vh] flex items-center justify-center overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #F59E0B 0%, #EA580C 60%, #DC2626 100%)' }}
-      >
-        <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
-          }}
-        />
-        <div className="absolute top-10 right-10 w-72 h-72 bg-white/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-10 w-56 h-56 bg-white/5 rounded-full blur-2xl" />
+      <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-[#2D190F]">
         <HeroContent whatsappUrl={whatsappUrl} />
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-white/50">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 text-white/40">
           <span className="text-xs tracking-widest uppercase">Scroll</span>
-          <div className="w-px h-8 bg-white/30" />
+          <div className="w-px h-8 bg-white/20" />
         </div>
       </section>
 
       {/* ── Category Strip ── */}
-      <section className="py-10 bg-white border-b border-masala-200">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-            {CATEGORIES.map((cat) => (
-              <Link
-                key={cat.label}
-                href={`/products?category=${encodeURIComponent(cat.label)}`}
-                className="snap-start shrink-0 flex items-center gap-2 px-4 py-2 bg-masala-50 hover:bg-saffron-50 hover:border-saffron-300 border border-masala-200 rounded-full text-sm font-medium text-masala-800 hover:text-saffron-700 transition-all duration-150 whitespace-nowrap"
-              >
-                <span>{cat.emoji}</span>
-                {cat.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <CategoryStrip />
 
       {/* ── Featured Products ── */}
       <section className="py-20 bg-masala-50">
@@ -242,28 +208,6 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ── WhatsApp CTA Banner ── */}
-      <section className="py-14 bg-cardamom-600">
-        <div className="max-w-3xl mx-auto px-6 text-center">
-          <MessageCircle className="w-10 h-10 text-white/70 mx-auto mb-4" />
-          <h2 className="font-heading text-2xl md:text-3xl font-bold text-white mb-3">
-            Questions? We&apos;re Just a Message Away
-          </h2>
-          <p className="text-white/80 mb-8 text-sm md:text-base">
-            Chat with us on WhatsApp for orders, custom requests, or anything about our masalas.
-          </p>
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-white text-cardamom-700 font-semibold px-8 py-3.5 rounded-2xl hover:bg-green-50 transition-colors shadow-md"
-          >
-            <MessageCircle className="w-5 h-5" />
-            Open WhatsApp
-          </a>
         </div>
       </section>
 

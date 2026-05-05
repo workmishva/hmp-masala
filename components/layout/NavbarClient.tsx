@@ -123,15 +123,9 @@ export function NavbarClient({ userName, userRole }: NavbarClientProps) {
           <div className="hidden md:flex items-center gap-2">
             <Link
               href="/login"
-              className="text-sm font-medium text-masala-800 hover:text-saffron-600 px-3 py-1.5 transition-colors"
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
               className="text-sm font-medium bg-saffron-500 text-white px-4 py-1.5 rounded-xl hover:bg-saffron-600 transition-colors shadow-sm"
             >
-              Register
+              Sign In
             </Link>
           </div>
         )}
@@ -178,8 +172,7 @@ export function NavbarClient({ userName, userRole }: NavbarClientProps) {
             </>
           ) : (
             <>
-              <Link href="/login"    onClick={() => setMobileOpen(false)} className="py-2.5 text-sm font-medium text-masala-800">Login</Link>
-              <Link href="/register" onClick={() => setMobileOpen(false)} className="py-2.5 text-sm font-medium text-saffron-600">Register</Link>
+              <Link href="/login" onClick={() => setMobileOpen(false)} className="py-2.5 text-sm font-medium text-saffron-600">Sign In</Link>
             </>
           )}
         </div>
