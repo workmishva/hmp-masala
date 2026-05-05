@@ -86,7 +86,7 @@ function ScrollStrip({
               sizes="(max-width: 768px) 280px, 340px"
               className="object-cover"
               priority={prioritizeFirst && i < 3}
-              loading={prioritizeFirst && i < 3 ? 'eager' : 'lazy'}
+              loading="eager"
             />
             {/* Per-card bottom vignette */}
             <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent" />

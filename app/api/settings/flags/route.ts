@@ -34,7 +34,7 @@ export async function PUT(req: Request) {
     const settings = await Settings.findOneAndUpdate(
       {},
       { $set: body },
-      { new: true, upsert: true }
+      { returnDocument: 'after', upsert: true }
     )
     return NextResponse.json({ data: settings })
   } catch {

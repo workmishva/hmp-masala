@@ -49,7 +49,7 @@ export async function PUT(
     }
 
     await connectDB()
-    const product = await Product.findByIdAndUpdate(id, { $set: parsed.data }, { new: true })
+    const product = await Product.findByIdAndUpdate(id, { $set: parsed.data }, { returnDocument: 'after' })
     if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
     return NextResponse.json({ data: product })
   } catch {

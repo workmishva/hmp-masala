@@ -26,7 +26,7 @@ export async function PUT(req: Request) {
     const order = await Order.findByIdAndUpdate(
       parsed.data.orderId,
       { status: parsed.data.status },
-      { new: true }
+      { returnDocument: 'after' }
     )
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
