@@ -74,6 +74,7 @@ export interface IOrder {
   status: OrderStatus
   paymentStatus: PaymentStatus
   cancelledByUser?: boolean
+  archivedAt?: Date
   createdAt: Date
 }
 

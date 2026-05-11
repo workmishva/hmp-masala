@@ -6,6 +6,11 @@ import Order from '@/models/Order'
 import User from '@/models/User'
 import { subDays, startOfDay, format } from 'date-fns'
 
+// Active orders = verified + not archived by a previous admin reset.
+// Archived orders are still owned by their users (visible in My Orders)
+// but excluded from all admin dashboard figures.
+const ACTIVE = { isVerified: true, archivedAt: { $exists: false } } as const
+
 export async function GET() {
   const session = await auth()
   if (!session || session.user.role !== 'admin') {
@@ -17,24 +22,24 @@ export async function GET() {
 
     const [totalProducts, totalOrders, totalUsers, pendingOrders, revenueResult] = await Promise.all([
       Product.countDocuments({ isActive: true }),
-      Order.countDocuments(),
+      Order.countDocuments(ACTIVE),
       User.countDocuments({ role: 'enduser' }),
-      Order.countDocuments({ status: 'Pending' }),
+      Order.countDocuments({ ...ACTIVE, status: 'Pending' }),
       Order.aggregate([
-        { $match: { isVerified: true } },
+        { $match: ACTIVE },
         { $group: { _id: null, total: { $sum: '$totalAmount' } } },
       ]),
     ])
 
     const totalRevenue = revenueResult[0]?.total ?? 0
 
-    // Last 7 days daily revenue
+    // Last 7 days daily revenue (active orders only)
     const sevenDaysAgo = startOfDay(subDays(new Date(), 6))
     const dailyOrders  = await Order.aggregate([
       {
         $match: {
-          isVerified: true,
-          createdAt:  { $gte: sevenDaysAgo },
+          ...ACTIVE,
+          createdAt: { $gte: sevenDaysAgo },
         },
       },
       {
@@ -60,8 +65,8 @@ export async function GET() {
       }
     })
 
-    // Recent 5 orders
-    const recentOrders = await Order.find()
+    // Recent 5 active orders
+    const recentOrders = await Order.find(ACTIVE)
       .sort({ createdAt: -1 })
       .limit(5)
       .populate('userId', 'name email')

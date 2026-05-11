@@ -15,7 +15,9 @@ export async function GET() {
   try {
     await connectDB()
 
-    const orders = await Order.find({ isVerified: true })
+    // Export only active (non-archived) verified orders.
+    // Archived orders were cleared by a previous admin reset and are excluded.
+    const orders = await Order.find({ isVerified: true, archivedAt: { $exists: false } })
       .sort({ createdAt: -1 })
       .populate('userId', 'name email')
       .lean()

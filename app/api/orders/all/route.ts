@@ -13,10 +13,12 @@ export async function GET(req: NextRequest) {
     await connectDB()
 
     const { searchParams } = req.nextUrl
-    // ?unverified=1 to include unverified (admin only, for debugging)
     const includeUnverified = searchParams.get('unverified') === '1'
 
-    const filter = includeUnverified ? {} : { isVerified: true }
+    // Archived orders are excluded from the admin orders panel by default.
+    // They still exist in the database and remain visible to end-users in My Orders.
+    const filter: Record<string, unknown> = { archivedAt: { $exists: false } }
+    if (!includeUnverified) filter.isVerified = true
 
     const orders = await Order.find(filter)
       .sort({ createdAt: -1 })

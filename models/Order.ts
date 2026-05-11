@@ -19,6 +19,7 @@ export interface OrderDocument extends Document {
   status: OrderStatus
   paymentStatus: PaymentStatus
   cancelledByUser?: boolean
+  archivedAt?: Date
   createdAt: Date
 }
 
@@ -52,6 +53,7 @@ const OrderSchema = new Schema<OrderDocument>(
       default: 'Unpaid',
     },
     cancelledByUser: { type: Boolean, default: false },
+    archivedAt:      { type: Date },
   },
   { timestamps: true }
 )

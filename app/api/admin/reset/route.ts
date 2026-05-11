@@ -21,8 +21,10 @@ export async function POST() {
     const periodFrom = settings?.lastResetAt ?? null
     const periodTo   = new Date()
 
+    // Only gather and archive the current active (non-archived) verified orders.
+    // Previously archived orders from past resets are intentionally excluded.
     const [orders] = await Promise.all([
-      Order.find({ isVerified: true })
+      Order.find({ isVerified: true, archivedAt: { $exists: false } })
         .populate('userId', 'name email')
         .lean(),
     ])
@@ -77,12 +79,18 @@ export async function POST() {
       dailySummary,
     })
 
-    // Perform reset: delete all verified orders, update lastResetAt
+    // Archive active verified orders instead of deleting them.
+    // Users will still see these orders in My Orders; they are hidden from
+    // admin stats, the orders list, and future exports.
+    const archiveTimestamp = new Date()
     await Promise.all([
-      Order.deleteMany({ isVerified: true }),
+      Order.updateMany(
+        { isVerified: true, archivedAt: { $exists: false } },
+        { $set: { archivedAt: archiveTimestamp } },
+      ),
       Settings.findOneAndUpdate(
         {},
-        { lastResetAt: new Date() },
+        { lastResetAt: archiveTimestamp },
         { upsert: true, returnDocument: 'after' }
       ),
     ])
