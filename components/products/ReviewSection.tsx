@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Star, MessageSquare } from 'lucide-react'
+import { Star, MessageSquare, LogIn, ShoppingBag } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -77,11 +77,14 @@ function ReviewCard({ review }: { review: IReview }) {
 }
 
 // ── Main section ─────────────────────────────────────────────────────────────
+type ReviewEligibility = 'guest' | 'admin' | 'no_order' | 'already_reviewed' | 'eligible'
+
 interface ReviewData {
-  reviews:         IReview[]
-  canReview:       boolean
-  hasReviewed:     boolean
-  eligibleOrderId: string | null
+  reviews:           IReview[]
+  canReview:         boolean
+  hasReviewed:       boolean
+  eligibleOrderId:   string | null
+  reviewEligibility: ReviewEligibility
 }
 
 export function ReviewSection({ productId }: { productId: string }) {
@@ -90,6 +93,7 @@ export function ReviewSection({ productId }: { productId: string }) {
   const [rating, setRating]         = useState(0)
   const [comment, setComment]       = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [showForm, setShowForm]     = useState(false)
 
   useEffect(() => {
     fetch(`/api/reviews?productId=${productId}`)
@@ -142,6 +146,7 @@ export function ReviewSection({ productId }: { productId: string }) {
       } : prev)
       setRating(0)
       setComment('')
+      setShowForm(false)
     } catch {
       toast.error('Failed to submit review')
     } finally {
@@ -178,7 +183,41 @@ export function ReviewSection({ productId }: { productId: string }) {
             </div>
           )}
         </div>
+
+        {/* Add Review button — only for eligible endusers */}
+        {!loading && data?.reviewEligibility === 'eligible' && (
+          <button
+            type="button"
+            onClick={() => setShowForm((v) => !v)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-saffron-400/40 text-saffron-600 bg-transparent text-sm font-medium hover:bg-saffron-50/60 hover:border-saffron-400/70 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron-400"
+            aria-expanded={showForm}
+            aria-controls="review-form"
+          >
+            <MessageSquare size={15} />
+            {showForm ? 'Cancel' : 'Add Review'}
+          </button>
+        )}
       </div>
+
+      {/* Eligibility hint — shown when user cannot review, with reason */}
+      {!loading && data && data.reviewEligibility !== 'eligible' && data.reviewEligibility !== 'already_reviewed' && data.reviewEligibility !== 'admin' && (
+        <div className="flex items-center gap-2.5 mb-6 px-4 py-3 rounded-xl bg-masala-50 border border-masala-200 text-masala-500 text-sm">
+          {data.reviewEligibility === 'guest' ? (
+            <>
+              <LogIn size={15} className="shrink-0 text-masala-400" />
+              <span>
+                <a href="/login" className="text-saffron-600 font-medium hover:underline">Sign in</a>
+                {' '}to leave a review — only customers with a delivered order can review products.
+              </span>
+            </>
+          ) : (
+            <>
+              <ShoppingBag size={15} className="shrink-0 text-masala-400" />
+              <span>You can leave a review once you have received a delivered order for this product.</span>
+            </>
+          )}
+        </div>
+      )}
 
       {/* Skeleton */}
       {loading && (
@@ -198,9 +237,9 @@ export function ReviewSection({ productId }: { productId: string }) {
 
       {!loading && data && (
         <>
-          {/* Review form — only for eligible users */}
-          {data.canReview && (
-            <div className="bg-saffron-50 border border-saffron-200 rounded-2xl p-6 mb-8">
+          {/* Review form — shown when eligible and user has opened it */}
+          {data.canReview && showForm && (
+            <div id="review-form" className="bg-saffron-50 border border-saffron-200 rounded-2xl p-6 mb-8">
               <h3 className="font-heading font-semibold text-masala-900 mb-4 flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-saffron-600" />
                 Share Your Experience

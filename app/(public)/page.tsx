@@ -29,14 +29,47 @@ const WHY_CARDS = [
   },
 ]
 
+const BESTSELLERS_MIN = 3
+
 async function getFeaturedProducts(): Promise<IProduct[]> {
   try {
     await connectDB()
-    const products = await Product.find({ isActive: true })
+
+    const featured = await Product.find({ isActive: true, isFeatured: true })
       .sort({ createdAt: -1 })
-      .limit(3)
       .lean()
-    return JSON.parse(JSON.stringify(products))
+
+    if (featured.length >= BESTSELLERS_MIN) {
+      return JSON.parse(JSON.stringify(featured))
+    }
+
+    // Fill remaining slots — prefer products from categories not already represented
+    const usedIds   = featured.map((p) => p._id)
+    const usedCats  = [...new Set(featured.map((p) => p.category))]
+    const needed    = BESTSELLERS_MIN - featured.length
+
+    const fromOther = await Product.find({
+      isActive:  true,
+      _id:       { $nin: usedIds },
+      ...(usedCats.length ? { category: { $nin: usedCats } } : {}),
+    })
+      .sort({ createdAt: -1 })
+      .limit(needed)
+      .lean()
+
+    const combined = [...featured, ...fromOther]
+
+    // Still short? Top up from any remaining active product
+    if (combined.length < BESTSELLERS_MIN) {
+      const allUsedIds = combined.map((p) => p._id)
+      const topUp = await Product.find({ isActive: true, _id: { $nin: allUsedIds } })
+        .sort({ createdAt: -1 })
+        .limit(BESTSELLERS_MIN - combined.length)
+        .lean()
+      return JSON.parse(JSON.stringify([...combined, ...topUp]))
+    }
+
+    return JSON.parse(JSON.stringify(combined))
   } catch {
     return []
   }
@@ -108,15 +141,7 @@ async function FeaturedGrid() {
   await connection()
   const products = await getFeaturedProducts()
 
-  if (products.length === 0) {
-    return (
-      <div className="text-center py-16 text-masala-500">
-        <span className="text-5xl mb-4 block">🌶️</span>
-        <p className="font-medium">Products loading soon...</p>
-        <p className="text-sm mt-1">Check back after the admin adds products.</p>
-      </div>
-    )
-  }
+  if (products.length === 0) return null
 
   return (
     <>
@@ -147,10 +172,6 @@ export default async function HomePage() {
       {/* ── Hero ── */}
       <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-[#2D190F]">
         <HeroContent whatsappUrl={whatsappUrl} />
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 text-white/40">
-          <span className="text-xs tracking-widest uppercase">Scroll</span>
-          <div className="w-px h-8 bg-white/20" />
-        </div>
       </section>
 
       {/* ── Category Strip ── */}

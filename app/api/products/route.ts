@@ -12,6 +12,14 @@ const createSchema = z.object({
   category:    z.string().min(2),
   images:      z.array(z.string()).optional().default([]),
   isActive:    z.boolean().optional().default(true),
+  isFeatured:  z.boolean().optional().default(false),
+  weights: z.array(z.object({
+    weight:    z.string().min(1),
+    price:     z.number().min(0),
+    subtitle:  z.string().optional().default(''),
+    isDefault: z.boolean().optional().default(false),
+    isActive:  z.boolean().optional().default(true),
+  })).optional().default([]),
 })
 
 // GET /api/products — public, supports ?q=&category=&sort=&page=&limit=&isActive=
@@ -74,7 +82,7 @@ export async function POST(req: NextRequest) {
 
     await connectDB()
     const product = await Product.create(parsed.data)
-    return NextResponse.json({ data: product }, { status: 201 })
+    return NextResponse.json({ data: JSON.parse(JSON.stringify(product)) }, { status: 201 })
   } catch {
     return NextResponse.json({ error: 'Failed to create product' }, { status: 500 })
   }

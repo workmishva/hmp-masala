@@ -11,7 +11,7 @@ const publicDir = join(__dirname, '../public')
 const appDir    = join(__dirname, '../app')
 
 // Source SVG — the clean 512×512 brand icon
-const svgSrc = join(publicDir, 'icon-512(2).svg')
+const svgSrc = join(publicDir, 'icon-512.svg')
 const svgBuf = readFileSync(svgSrc)
 
 // 1. PNG icons for manifest + head metadata

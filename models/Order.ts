@@ -6,6 +6,7 @@ interface OrderItemSubdoc {
   name: string
   price: number
   qty: number
+  weight?: string
 }
 
 export interface OrderDocument extends Document {
@@ -17,6 +18,7 @@ export interface OrderDocument extends Document {
   isVerified: boolean
   status: OrderStatus
   paymentStatus: PaymentStatus
+  cancelledByUser?: boolean
   createdAt: Date
 }
 
@@ -26,6 +28,7 @@ const OrderItemSchema = new Schema<OrderItemSubdoc>(
     name:      { type: String, required: true },
     price:     { type: Number, required: true },
     qty:       { type: Number, required: true, min: 1 },
+    weight:    { type: String },
   },
   { _id: false }
 )
@@ -48,6 +51,7 @@ const OrderSchema = new Schema<OrderDocument>(
       enum: ['Unpaid', 'Paid'],
       default: 'Unpaid',
     },
+    cancelledByUser: { type: Boolean, default: false },
   },
   { timestamps: true }
 )

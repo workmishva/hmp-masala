@@ -77,10 +77,15 @@ async function ProductContent({ id }: { id: string }) {
             {product.name}
           </h1>
 
-          {product.stock > 0 ? (
+          {product.stock > 10 ? (
             <div className="inline-flex items-center gap-2 bg-cardamom-100 text-cardamom-600 text-sm font-medium px-3 py-1.5 rounded-full w-fit mb-4">
               <span className="w-2 h-2 rounded-full bg-cardamom-600" />
-              In Stock ({product.stock} available)
+              In Stock
+            </div>
+          ) : product.stock > 0 ? (
+            <div className="inline-flex items-center gap-2 bg-saffron-100 text-saffron-700 text-sm font-medium px-3 py-1.5 rounded-full w-fit mb-4">
+              <span className="w-2 h-2 rounded-full bg-saffron-500" />
+              Few Left
             </div>
           ) : (
             <div className="inline-flex items-center gap-2 bg-masala-100 text-masala-600 text-sm font-medium px-3 py-1.5 rounded-full w-fit mb-4">
@@ -97,6 +102,7 @@ async function ProductContent({ id }: { id: string }) {
             productName={product.name}
             basePrice={product.price}
             maxStock={product.stock}
+            weights={product.weights ?? []}
           />
 
           <ProductTabs description={product.description} />

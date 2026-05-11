@@ -36,30 +36,39 @@ export async function GET(req: NextRequest) {
       userName:  (r.userId as unknown as { name?: string })?.name ?? 'Customer',
     }))
 
-    let canReview:       boolean     = false
-    let hasReviewed:     boolean     = false
-    let eligibleOrderId: string|null = null
+    let canReview:        boolean     = false
+    let hasReviewed:      boolean     = false
+    let eligibleOrderId:  string|null = null
+    type ReviewEligibility = 'guest' | 'admin' | 'no_order' | 'already_reviewed' | 'eligible'
+    let reviewEligibility: ReviewEligibility = 'guest'
 
     const session = await auth()
-    if (session?.user.role === 'enduser') {
-      const existing = await Review.findOne({ userId: session.user.id, productId })
-      hasReviewed = !!existing
+    if (session) {
+      if (session.user.role === 'admin') {
+        reviewEligibility = 'admin'
+      } else if (session.user.role === 'enduser') {
+        const existing = await Review.findOne({ userId: session.user.id, productId })
+        hasReviewed = !!existing
 
-      if (!hasReviewed) {
-        const oid = new mongoose.Types.ObjectId(productId)
-        const order = await Order.findOne({
-          userId:            session.user.id,
-          isVerified:        true,
-          status:            'Delivered',
-          'items.productId': oid,
-        }).select('_id')
+        if (hasReviewed) {
+          reviewEligibility = 'already_reviewed'
+        } else {
+          const oid = new mongoose.Types.ObjectId(productId)
+          const order = await Order.findOne({
+            userId:            session.user.id,
+            isVerified:        true,
+            status:            'Delivered',
+            'items.productId': oid,
+          }).select('_id')
 
-        canReview       = !!order
-        eligibleOrderId = order?._id.toString() ?? null
+          canReview       = !!order
+          eligibleOrderId = order?._id.toString() ?? null
+          reviewEligibility = order ? 'eligible' : 'no_order'
+        }
       }
     }
 
-    return NextResponse.json({ data: { reviews: serialized, canReview, hasReviewed, eligibleOrderId } })
+    return NextResponse.json({ data: { reviews: serialized, canReview, hasReviewed, eligibleOrderId, reviewEligibility } })
   } catch {
     return NextResponse.json({ error: 'Failed to fetch reviews' }, { status: 500 })
   }

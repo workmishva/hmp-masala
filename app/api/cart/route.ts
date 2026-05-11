@@ -5,12 +5,17 @@ import Cart from '@/models/Cart'
 
 export async function GET() {
   const session = await auth()
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
     await connectDB()
+
+    // Lazily expire pending checkout data older than 48 h
+    await Cart.updateOne(
+      { userId: session.user.id, pendingExpiry: { $lt: new Date() } },
+      { $unset: { pendingCode: '', pendingAddress: '', pendingExpiry: '' } },
+    )
+
     const cart = await Cart.findOne({ userId: session.user.id })
       .populate('items.productId', 'name price images stock isActive category')
       .lean()

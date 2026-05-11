@@ -25,15 +25,15 @@ function DeleteModal({
   loading:   boolean
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl border border-masala-200 shadow-card-hover max-w-sm w-full p-6 space-y-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-3xl border border-masala-200 shadow-2xl max-w-sm w-full p-6 space-y-4">
         <div className="text-center">
           <div className="w-12 h-12 bg-chili-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Trash2 className="w-6 h-6 text-chili-600" />
           </div>
           <h3 className="font-heading font-semibold text-masala-900 text-lg">Delete Product?</h3>
-          <p className="text-masala-600 text-sm mt-1">
-            Are you sure you want to delete <strong>{product.name}</strong>? This cannot be undone.
+          <p className="text-masala-500 text-sm mt-1">
+            Are you sure you want to delete <strong className="text-masala-900">{product.name}</strong>? This cannot be undone.
           </p>
         </div>
         <div className="flex gap-3">
@@ -48,16 +48,16 @@ function DeleteModal({
 }
 
 export function AdminProductsClient({ initialProducts }: AdminProductsClientProps) {
-  const router            = useRouter()
+  const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
-  const [products, setProducts]     = useState<IProduct[]>(initialProducts)
-  const [search, setSearch]         = useState('')
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [products, setProducts]       = useState<IProduct[]>(initialProducts)
+  const [search, setSearch]           = useState('')
+  const [modalOpen, setModalOpen]     = useState(false)
   const [editProduct, setEditProduct] = useState<IProduct | undefined>(undefined)
   const [deleteTarget, setDeleteTarget] = useState<IProduct | null>(null)
-  const [deleting, setDeleting]     = useState(false)
-  const [toggling, setToggling]     = useState<string | null>(null)
+  const [deleting, setDeleting]       = useState(false)
+  const [toggling, setToggling]       = useState<string | null>(null)
 
   const filtered = products.filter(
     (p) =>
@@ -65,9 +65,9 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
       p.category.toLowerCase().includes(search.toLowerCase())
   )
 
-  const openAdd  = () => { setEditProduct(undefined); setDrawerOpen(true) }
-  const openEdit = (p: IProduct) => { setEditProduct(p); setDrawerOpen(true) }
-  const closeDrawer = () => { setDrawerOpen(false); setEditProduct(undefined) }
+  const openAdd  = () => { setEditProduct(undefined); setModalOpen(true) }
+  const openEdit = (p: IProduct) => { setEditProduct(p); setModalOpen(true) }
+  const closeModal = () => { setModalOpen(false); setEditProduct(undefined) }
 
   const handleSaved = (saved: IProduct) => {
     setProducts((prev) => {
@@ -79,7 +79,7 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
       }
       return [saved, ...prev]
     })
-    closeDrawer()
+    closeModal()
     startTransition(() => router.refresh())
   }
 
@@ -180,7 +180,6 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
                       product.stock < 5  ? 'border-l-4 border-l-yellow-400' : ''
                     }`}
                   >
-                    {/* Product name + image */}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="relative w-10 h-10 rounded-xl bg-masala-50 overflow-hidden shrink-0 border border-masala-200">
@@ -207,7 +206,6 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
                       </span>
                     </td>
 
-                    {/* Active toggle */}
                     <td className="px-4 py-3 hidden lg:table-cell">
                       <button
                         onClick={() => handleToggle(product)}
@@ -225,7 +223,6 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
                       </button>
                     </td>
 
-                    {/* Actions */}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 justify-end">
                         <button
@@ -252,38 +249,45 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
         </div>
       </div>
 
-      {/* Add/Edit Drawer */}
-      {drawerOpen && (
-        <div className="fixed inset-0 z-50 flex">
-          {/* Backdrop */}
+      {/* ── Add / Edit modal (old-project style: centered, backdrop blur) ── */}
+      {modalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          onClick={closeModal}
+        >
           <div
-            className="flex-1 bg-black/30 backdrop-blur-sm"
-            onClick={closeDrawer}
-          />
-          {/* Drawer panel */}
-          <div className="w-full max-w-md bg-white shadow-card-hover flex flex-col h-full">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-masala-200">
-              <h2 className="font-heading font-semibold text-masala-900">
+            className="w-full max-w-2xl max-h-[90vh] overflow-hidden rounded-3xl bg-white shadow-2xl border border-masala-200 flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal header */}
+            <div className="flex items-center justify-between px-6 py-5 border-b border-masala-100 shrink-0">
+              <h2 className="font-heading text-xl font-bold text-masala-900">
                 {editProduct ? 'Edit Product' : 'Add New Product'}
               </h2>
               <button
-                onClick={closeDrawer}
-                className="p-2 rounded-xl text-masala-500 hover:bg-masala-100 transition-colors"
-                aria-label="Close drawer"
+                onClick={closeModal}
+                className="p-2 rounded-xl text-masala-400 hover:bg-masala-100 hover:text-masala-700 transition-colors"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
+
             <ProductForm
               product={editProduct}
               onSuccess={handleSaved}
-              onCancel={closeDrawer}
+              onCancel={closeModal}
+              onDelete={editProduct ? () => {
+                const target = editProduct
+                closeModal()
+                setDeleteTarget(target)
+              } : undefined}
             />
           </div>
         </div>
       )}
 
-      {/* Delete modal */}
+      {/* Delete confirmation modal */}
       {deleteTarget && (
         <DeleteModal
           product={deleteTarget}
@@ -293,10 +297,7 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
         />
       )}
 
-      {/* Loading overlay for router refresh */}
-      {isPending && (
-        <div className="fixed inset-0 z-40 pointer-events-none" />
-      )}
+      {isPending && <div className="fixed inset-0 z-40 pointer-events-none" />}
     </>
   )
 }

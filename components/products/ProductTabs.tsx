@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 
-type Tab = 'Description' | 'Ingredients' | 'How to Use'
-const TABS: Tab[] = ['Description', 'Ingredients', 'How to Use']
+type Tab = 'Description' | 'How to Use'
+const TABS: Tab[] = ['Description', 'How to Use']
 
 const HOW_TO_USE =
   'Use 1–2 teaspoons per serving. Add to hot oil or ghee and fry briefly before adding other ingredients. Adjust quantity to taste. Store in a cool, dry place away from direct sunlight.'
@@ -17,7 +17,6 @@ export function ProductTabs({ description }: ProductTabsProps) {
 
   const content: Record<Tab, string> = {
     'Description': description,
-    'Ingredients': description,
     'How to Use':  HOW_TO_USE,
   }
 

@@ -12,6 +12,14 @@ const updateSchema = z.object({
   category:    z.string().min(2).optional(),
   images:      z.array(z.string()).optional(),
   isActive:    z.boolean().optional(),
+  isFeatured:  z.boolean().optional(),
+  weights: z.array(z.object({
+    weight:    z.string().min(1),
+    price:     z.number().min(0),
+    subtitle:  z.string().optional().default(''),
+    isDefault: z.boolean().optional().default(false),
+    isActive:  z.boolean().optional().default(true),
+  })).optional(),
 })
 
 // GET /api/products/:id — public
@@ -49,9 +57,9 @@ export async function PUT(
     }
 
     await connectDB()
-    const product = await Product.findByIdAndUpdate(id, { $set: parsed.data }, { returnDocument: 'after' })
+    const product = await Product.findByIdAndUpdate(id, { $set: parsed.data }, { returnDocument: 'after' }).lean()
     if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 })
-    return NextResponse.json({ data: product })
+    return NextResponse.json({ data: JSON.parse(JSON.stringify(product)) })
   } catch {
     return NextResponse.json({ error: 'Failed to update product' }, { status: 500 })
   }

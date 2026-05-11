@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Star, Package } from 'lucide-react'
+import { Package } from 'lucide-react'
 import { motion } from 'framer-motion'
 import type { IProduct } from '@/types'
 import { CATEGORY_META } from '@/lib/categories'
@@ -56,12 +56,6 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
             {product.category}
           </span>
 
-          {/* Star rating — top right */}
-          <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/90 dark:bg-masala-100/90 backdrop-blur-sm px-2.5 py-1 rounded-full shadow-sm">
-            <Star className="w-3 h-3 fill-[#EAB308] text-[#EAB308]" />
-            <span className="text-xs font-bold text-masala-800">4.9</span>
-          </div>
-
           {/* OOS overlay */}
           {isOOS && (
             <div className="absolute inset-0 bg-white/40 flex items-center justify-center">
@@ -88,10 +82,15 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
               <span className="text-[10px] font-semibold uppercase tracking-widest text-masala-400">Price</span>
               <span className="text-xl font-black text-saffron-600">₹{product.price}</span>
             </div>
-            {product.stock > 0 ? (
+            {product.stock > 10 ? (
               <span className="flex items-center gap-1.5 text-xs text-cardamom-600 font-semibold">
                 <span className="w-1.5 h-1.5 rounded-full bg-cardamom-600" />
                 In Stock
+              </span>
+            ) : product.stock > 0 ? (
+              <span className="flex items-center gap-1.5 text-xs text-saffron-600 font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-saffron-500" />
+                Few Left
               </span>
             ) : (
               <span className="text-xs text-masala-400 font-medium">Unavailable</span>

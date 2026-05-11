@@ -8,6 +8,8 @@ export interface ProductDocument extends Document {
   category: string
   images: string[]
   isActive: boolean
+  isFeatured: boolean
+  weights: { weight: string; price: number; subtitle: string; isDefault: boolean; isActive: boolean }[]
   createdAt: Date
 }
 
@@ -20,6 +22,14 @@ const ProductSchema = new Schema<ProductDocument>(
     category:    { type: String, required: true, trim: true },
     images:      [{ type: String }],
     isActive:    { type: Boolean, default: true },
+    isFeatured:  { type: Boolean, default: false },
+    weights: [{
+      weight:    { type: String, required: true },
+      price:     { type: Number, required: true, min: 0 },
+      subtitle:  { type: String, default: '' },
+      isDefault: { type: Boolean, default: false },
+      isActive:  { type: Boolean, default: true },
+    }],
   },
   { timestamps: true }
 )

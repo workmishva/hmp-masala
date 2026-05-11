@@ -12,6 +12,14 @@ export interface IUser {
   createdAt: Date
 }
 
+export interface IProductWeight {
+  weight:     string
+  price:      number
+  subtitle?:  string
+  isDefault?: boolean
+  isActive?:  boolean
+}
+
 export interface IProduct {
   _id: string
   name: string
@@ -21,6 +29,8 @@ export interface IProduct {
   category: string
   images: string[]
   isActive: boolean
+  isFeatured: boolean
+  weights?: IProductWeight[]
   createdAt: Date
 }
 
@@ -50,6 +60,7 @@ export interface IOrderItem {
   name: string
   price: number
   qty: number
+  weight?: string
 }
 
 export interface IOrder {
@@ -62,6 +73,7 @@ export interface IOrder {
   isVerified: boolean
   status: OrderStatus
   paymentStatus: PaymentStatus
+  cancelledByUser?: boolean
   createdAt: Date
 }
 

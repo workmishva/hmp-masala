@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { format } from 'date-fns'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp, Search, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { IOrder, OrderStatus } from '@/types'
 
@@ -25,6 +25,7 @@ export default function AdminOrdersPage() {
   const [orders, setOrders]       = useState<OrderWithUser[]>([])
   const [loading, setLoading]     = useState(true)
   const [filter, setFilter]       = useState<string>('all')
+  const [search, setSearch]       = useState('')
   const [expanded, setExpanded]   = useState<string | null>(null)
   const [updating, setUpdating]   = useState<string | null>(null)
 
@@ -55,7 +56,20 @@ export default function AdminOrdersPage() {
     }
   }
 
-  const filtered = filter === 'all' ? orders : orders.filter((o) => o.status === filter)
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    return orders.filter((o) => {
+      if (filter !== 'all' && o.status !== filter) return false
+      if (!q) return true
+      const user = typeof o.userId === 'object' ? o.userId : null
+      return (
+        o.verificationCode.toLowerCase().includes(q) ||
+        (user?.name.toLowerCase().includes(q) ?? false) ||
+        (user?.email.toLowerCase().includes(q) ?? false) ||
+        o._id.toLowerCase().includes(q)
+      )
+    })
+  }, [orders, filter, search])
 
   if (loading) {
     return (
@@ -70,7 +84,28 @@ export default function AdminOrdersPage() {
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <h1 className="font-heading text-2xl font-bold text-masala-900">Orders</h1>
-        <span className="text-sm text-masala-500">{orders.length} total</span>
+        <span className="text-sm text-masala-500">{filtered.length} of {orders.length}</span>
+      </div>
+
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-masala-400 pointer-events-none" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search by order code, customer name or email…"
+          className="w-full h-10 pl-10 pr-10 border border-masala-200 rounded-xl bg-white text-sm text-masala-900 placeholder:text-masala-400 focus:outline-none focus:ring-2 focus:ring-saffron-400/40 focus:border-saffron-500 transition-all"
+        />
+        {search && (
+          <button
+            onClick={() => setSearch('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-masala-400 hover:text-masala-700 transition-colors"
+            aria-label="Clear search"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Filter tabs */}
@@ -117,6 +152,11 @@ export default function AdminOrdersPage() {
                     <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[order.status] ?? 'bg-masala-100 text-masala-600'}`}>
                       {order.status}
                     </span>
+                    {order.cancelledByUser && (
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-red-900/10 text-red-800 border border-red-800/20">
+                        User Cancelled
+                      </span>
+                    )}
                     {!order.isVerified && (
                       <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-700">
                         Unverified
@@ -143,9 +183,17 @@ export default function AdminOrdersPage() {
                     {/* Items */}
                     <div className="space-y-1.5">
                       {order.items.map((item, i) => (
-                        <div key={i} className="flex justify-between text-sm">
-                          <span className="text-masala-700">{item.name} × {item.qty}</span>
-                          <span className="text-masala-900 font-medium">₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
+                        <div key={i} className="flex justify-between text-sm gap-3">
+                          <span className="text-masala-700">
+                            {item.name}
+                            {item.weight && (
+                              <span className="ml-1.5 text-xs font-medium text-saffron-600 bg-saffron-50 border border-saffron-200 rounded-full px-1.5 py-0.5">
+                                {item.weight}
+                              </span>
+                            )}
+                            {' '}× {item.qty}
+                          </span>
+                          <span className="text-masala-900 font-medium shrink-0">₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
                         </div>
                       ))}
                     </div>

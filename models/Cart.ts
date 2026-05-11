@@ -1,15 +1,19 @@
 import mongoose, { Schema, Document, Model } from 'mongoose'
 
 interface CartItemSubdoc {
-  productId:   mongoose.Types.ObjectId
-  qty:         number
-  weight?:     string
+  productId:    mongoose.Types.ObjectId
+  qty:          number
+  weight?:      string
   weightPrice?: number
 }
 
 export interface CartDocument extends Document {
-  userId: mongoose.Types.ObjectId
-  items: CartItemSubdoc[]
+  userId:          mongoose.Types.ObjectId
+  items:           CartItemSubdoc[]
+  // Pending checkout — set on /api/orders/create, cleared on /api/orders/verify
+  pendingCode?:    string
+  pendingAddress?: string
+  pendingExpiry?:  Date
 }
 
 const CartItemSchema = new Schema<CartItemSubdoc>(
@@ -24,8 +28,11 @@ const CartItemSchema = new Schema<CartItemSubdoc>(
 
 const CartSchema = new Schema<CartDocument>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
-    items:  [CartItemSchema],
+    userId:         { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+    items:          [CartItemSchema],
+    pendingCode:    { type: String },
+    pendingAddress: { type: String },
+    pendingExpiry:  { type: Date },
   },
   { timestamps: true }
 )

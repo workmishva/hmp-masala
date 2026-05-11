@@ -3,9 +3,13 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
-import { Package, ChevronDown, ChevronUp } from 'lucide-react'
+import {
+  Package, ChevronDown, ChevronUp, Download, XCircle, AlertTriangle, Loader2,
+} from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { IOrder } from '@/types'
+
+const CANCELLABLE = new Set(['Pending', 'Confirmed'])
 
 const statusColors: Record<string, string> = {
   Pending:   'bg-yellow-100 text-yellow-700',
@@ -17,9 +21,12 @@ const statusColors: Record<string, string> = {
 }
 
 export default function MyOrdersPage() {
-  const [orders, setOrders]   = useState<IOrder[]>([])
-  const [loading, setLoading] = useState(true)
-  const [expanded, setExpanded] = useState<string | null>(null)
+  const [orders, setOrders]       = useState<IOrder[]>([])
+  const [loading, setLoading]     = useState(true)
+  const [expanded, setExpanded]   = useState<string | null>(null)
+  const [confirmCancel, setConfirmCancel] = useState<string | null>(null)
+  const [cancelling, setCancelling]       = useState<string | null>(null)
+  const [downloading, setDownloading]     = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/orders/my')
@@ -28,6 +35,52 @@ export default function MyOrdersPage() {
       .catch(() => toast.error('Failed to load orders'))
       .finally(() => setLoading(false))
   }, [])
+
+  const handleCancel = async (orderId: string) => {
+    setCancelling(orderId)
+    try {
+      const res  = await fetch('/api/orders/cancel', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ orderId }),
+      })
+      const data = await res.json()
+      if (!res.ok) { toast.error(data.error ?? 'Failed to cancel order'); return }
+      setOrders((prev) => prev.map((o) =>
+        o._id === orderId ? { ...o, status: 'Cancelled', cancelledByUser: true } : o
+      ))
+      toast.success('Order cancelled successfully.')
+    } catch {
+      toast.error('Failed to cancel order')
+    } finally {
+      setCancelling(null)
+      setConfirmCancel(null)
+    }
+  }
+
+  const handleDownloadInvoice = async (order: IOrder) => {
+    setDownloading(order._id)
+    try {
+      const res = await fetch(`/api/orders/invoice/${order._id}`)
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error((data as { error?: string }).error ?? 'Failed to generate invoice')
+      }
+      const blob = await res.blob()
+      const url  = URL.createObjectURL(blob)
+      const a    = document.createElement('a')
+      a.href     = url
+      a.download = `HMP-Invoice-${order.verificationCode}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to download invoice')
+    } finally {
+      setDownloading(null)
+    }
+  }
 
   if (loading) {
     return (
@@ -62,12 +115,16 @@ export default function MyOrdersPage() {
 
       <div className="space-y-4">
         {orders.map((order) => {
-          const isOpen = expanded === order._id
+          const isOpen    = expanded === order._id
+          const canCancel = CANCELLABLE.has(order.status)
+          const isConfirmingCancel = confirmCancel === order._id
 
           return (
             <div
               key={order._id}
-              className="bg-white border border-masala-200 rounded-2xl shadow-card overflow-hidden"
+              className={`bg-white border rounded-2xl shadow-card overflow-hidden transition-colors ${
+                order.status === 'Cancelled' ? 'border-chili-200 opacity-80' : 'border-masala-200'
+              }`}
             >
               {/* Header row */}
               <button
@@ -92,9 +149,9 @@ export default function MyOrdersPage() {
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[order.status] ?? 'bg-masala-100 text-masala-600'}`}>
                     {order.status}
                   </span>
-                  {!order.isVerified && (
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-yellow-100 text-yellow-700">
-                      Unverified
+                  {order.cancelledByUser && (
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-chili-100 text-chili-700">
+                      Cancelled by you
                     </span>
                   )}
                 </div>
@@ -104,10 +161,19 @@ export default function MyOrdersPage() {
               {/* Expanded details */}
               {isOpen && (
                 <div className="px-6 pb-5 border-t border-masala-100">
+                  {/* Items */}
                   <div className="pt-4 space-y-2">
                     {order.items.map((item, i) => (
                       <div key={i} className="flex items-center justify-between text-sm gap-3">
-                        <span className="text-masala-700">{item.name} × {item.qty}</span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-masala-700 truncate">{item.name}</span>
+                          {item.weight && (
+                            <span className="text-xs font-medium text-saffron-600 bg-saffron-50 border border-saffron-200 rounded-full px-1.5 py-0.5 shrink-0">
+                              {item.weight}
+                            </span>
+                          )}
+                          <span className="text-masala-500 shrink-0">× {item.qty}</span>
+                        </div>
                         <div className="flex items-center gap-3 shrink-0">
                           <span className="text-masala-900 font-medium">₹{(item.price * item.qty).toLocaleString('en-IN')}</span>
                           {order.status === 'Delivered' && (
@@ -122,19 +188,63 @@ export default function MyOrdersPage() {
                       </div>
                     ))}
                   </div>
+
                   <hr className="my-3 border-masala-100" />
-                  <div className="text-sm text-masala-600">
+
+                  {/* Delivery address */}
+                  <div className="text-sm text-masala-600 mb-4">
                     <p className="font-medium text-masala-900 mb-1">Delivery Address</p>
                     <p className="leading-relaxed whitespace-pre-wrap">{order.deliveryAddress}</p>
                   </div>
-                  {!order.isVerified && (
-                    <Link
-                      href="/checkout"
-                      className="inline-flex items-center gap-1.5 text-sm text-saffron-600 hover:text-saffron-700 font-medium mt-3"
+
+                  {/* Action buttons */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    {/* Download Invoice */}
+                    <button
+                      onClick={() => handleDownloadInvoice(order)}
+                      disabled={!!downloading}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border border-saffron-300 text-saffron-700 bg-saffron-50 hover:bg-saffron-100 transition-colors disabled:opacity-50"
                     >
-                      Verify this order →
-                    </Link>
-                  )}
+                      {downloading === order._id
+                        ? <Loader2 className="w-4 h-4 animate-spin" />
+                        : <Download className="w-4 h-4" />
+                      }
+                      {downloading === order._id ? 'Generating…' : 'Download Invoice'}
+                    </button>
+
+                    {/* Cancel Order */}
+                    {canCancel && !isConfirmingCancel && (
+                      <button
+                        onClick={() => setConfirmCancel(order._id)}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border border-chili-200 text-chili-600 hover:bg-chili-50 transition-colors"
+                      >
+                        <XCircle className="w-4 h-4" />
+                        Cancel Order
+                      </button>
+                    )}
+
+                    {/* Inline cancel confirmation */}
+                    {isConfirmingCancel && (
+                      <div className="flex items-center gap-2 bg-chili-50 border border-chili-200 rounded-xl px-4 py-2">
+                        <AlertTriangle className="w-4 h-4 text-chili-600 shrink-0" />
+                        <span className="text-sm text-chili-700 font-medium">Cancel this order?</span>
+                        <button
+                          onClick={() => handleCancel(order._id)}
+                          disabled={cancelling === order._id}
+                          className="ml-1 px-3 py-1 bg-chili-600 text-white text-xs font-bold rounded-lg hover:bg-chili-700 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
+                        >
+                          {cancelling === order._id && <Loader2 className="w-3 h-3 animate-spin" />}
+                          Yes, Cancel
+                        </button>
+                        <button
+                          onClick={() => setConfirmCancel(null)}
+                          className="px-3 py-1 text-xs font-semibold text-masala-600 hover:text-masala-900 transition-colors"
+                        >
+                          Keep Order
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

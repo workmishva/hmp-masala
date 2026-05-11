@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, MessageCircle, CheckCircle, Copy, Check } from 'lucide-react'
+import { ArrowLeft, MessageCircle, CheckCircle, Lock, Info } from 'lucide-react'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
@@ -25,7 +25,6 @@ interface CartItem {
 }
 
 interface OrderResult {
-  orderId: string
   verificationCode: string
   whatsappUrl: string
   totalAmount: number
@@ -93,9 +92,9 @@ export default function CheckoutPage() {
   const [address, setAddress]         = useState<Address>(EMPTY_ADDRESS)
   const [placing, setPlacing]         = useState(false)
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null)
-  const [verifyCode, setVerifyCode]   = useState('')
-  const [verifying, setVerifying]     = useState(false)
-  const [copied, setCopied]           = useState(false)
+  const [verifyCode, setVerifyCode]       = useState('')
+  const [verifying, setVerifying]         = useState(false)
+  const [whatsappOpened, setWhatsappOpened] = useState(false)
 
   const fetchCart = useCallback(async () => {
     try {
@@ -166,23 +165,17 @@ export default function CheckoutPage() {
   const openWhatsApp = () => {
     if (!orderResult) return
     window.open(orderResult.whatsappUrl, '_blank')
-  }
-
-  const copyCode = async () => {
-    if (!orderResult) return
-    await navigator.clipboard.writeText(orderResult.verificationCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    setWhatsappOpened(true)
   }
 
   const handleVerify = async () => {
-    if (!orderResult || !verifyCode.trim()) return
+    if (!orderResult || !verifyCode.trim() || !whatsappOpened) return
     setVerifying(true)
     try {
       const res  = await fetch('/api/orders/verify', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ orderId: orderResult.orderId, code: verifyCode.trim().toUpperCase() }),
+        body:    JSON.stringify({ code: verifyCode.trim().toUpperCase() }),
       })
       const data = await res.json()
       if (!res.ok) { toast.error(data.error ?? 'Invalid code'); return }
@@ -234,27 +227,19 @@ export default function CheckoutPage() {
         </motion.div>
 
         <div className="bg-white dark:bg-masala-100 border border-masala-200 rounded-2xl p-6 space-y-5 shadow-card">
-          {/* Code display */}
-          <div className="text-center">
-            <p className="text-xs font-semibold text-masala-500 uppercase tracking-wider mb-2">Your Order Code</p>
-            <div className="inline-flex items-center gap-3 bg-saffron-50 border border-saffron-200 rounded-2xl px-6 py-3">
-              <span className="font-mono text-3xl font-black text-saffron-700 tracking-widest">
-                {orderResult.verificationCode}
-              </span>
-              <button
-                onClick={copyCode}
-                aria-label="Copy code"
-                className="p-1.5 rounded-lg text-saffron-500 hover:bg-saffron-100 transition-colors"
-              >
-                {copied ? <Check className="w-4 h-4 text-cardamom-600" /> : <Copy className="w-4 h-4" />}
-              </button>
-            </div>
+
+          {/* Instruction banner */}
+          <div className="flex gap-3 bg-saffron-50 border border-saffron-200 rounded-xl p-4">
+            <Info className="w-4 h-4 text-saffron-600 shrink-0 mt-0.5" />
+            <p className="text-sm text-masala-700 leading-relaxed">
+              Send this message on WhatsApp so we can confirm your order and arrange payment. Copy the code from WhatsApp and paste it below to confirm your order.
+            </p>
           </div>
 
           {/* Step 1: WhatsApp */}
           <div>
             <p className="text-xs font-semibold text-masala-500 uppercase tracking-wider mb-2">Step 1 — Send via WhatsApp</p>
-            <p className="text-xs text-masala-500 mb-3">Tap below. Your code is pre-filled in the message. Just send it.</p>
+            <p className="text-xs text-masala-500 mb-3">Your order code is pre-filled in the message. Just tap and send.</p>
             <button
               type="button"
               onClick={openWhatsApp}
@@ -265,9 +250,15 @@ export default function CheckoutPage() {
             </button>
           </div>
 
-          {/* Step 2: Enter code */}
+          {/* Step 2: Enter code — locked until WhatsApp is opened */}
           <div>
             <p className="text-xs font-semibold text-masala-500 uppercase tracking-wider mb-2">Step 2 — Enter code to confirm</p>
+            {!whatsappOpened && (
+              <p className="text-xs text-masala-400 mb-2 flex items-center gap-1.5">
+                <Lock className="w-3 h-3 shrink-0" />
+                Send the WhatsApp message first to unlock this step.
+              </p>
+            )}
             <div className="flex gap-3">
               <input
                 type="text"
@@ -276,12 +267,13 @@ export default function CheckoutPage() {
                 onChange={(e) => setVerifyCode(e.target.value.toUpperCase())}
                 onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
                 maxLength={8}
-                className="flex-1 h-12 px-4 border border-masala-200 rounded-xl text-masala-900 font-mono tracking-widest text-center text-lg focus:outline-none focus:ring-2 focus:ring-saffron-400 bg-masala-50 dark:bg-masala-200"
+                disabled={!whatsappOpened}
+                className="flex-1 h-12 px-4 border border-masala-200 rounded-xl text-masala-900 font-mono tracking-widest text-center text-lg focus:outline-none focus:ring-2 focus:ring-saffron-400 bg-masala-50 dark:bg-masala-200 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
               />
               <Button
                 onClick={handleVerify}
                 loading={verifying}
-                disabled={verifyCode.trim().length < 4}
+                disabled={!whatsappOpened || verifyCode.trim().length < 4}
                 className="shrink-0"
               >
                 <CheckCircle className="w-4 h-4 mr-1" />
