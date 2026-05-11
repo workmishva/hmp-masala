@@ -35,8 +35,8 @@ export function NavbarClient({ userName, userRole }: NavbarClientProps) {
           <Link
             key={link.href}
             href={link.href}
-            className={`text-sm font-medium transition-colors hover:text-saffron-600 ${
-              isActive(link.href) ? 'text-saffron-600' : 'text-masala-800'
+            className={`text-sm font-medium transition-colors hover:text-chili-600 ${
+              isActive(link.href) ? 'text-chili-600' : 'text-masala-800'
             }`}
           >
             {link.label}
@@ -57,7 +57,7 @@ export function NavbarClient({ userName, userRole }: NavbarClientProps) {
         >
           <ShoppingCart className="w-5 h-5" />
           {cartCount > 0 && (
-            <span className="absolute -top-0.5 -right-0.5 bg-saffron-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+            <span className="absolute -top-0.5 -right-0.5 bg-chili-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
               {cartCount > 9 ? '9+' : cartCount}
             </span>
           )}
@@ -70,7 +70,7 @@ export function NavbarClient({ userName, userRole }: NavbarClientProps) {
               onClick={() => setProfileOpen(!profileOpen)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-masala-100 transition-colors text-sm font-medium text-masala-800"
             >
-              <span className="w-7 h-7 rounded-full bg-saffron-100 text-saffron-700 flex items-center justify-center text-xs font-bold">
+              <span className="w-7 h-7 rounded-full bg-chili-100 text-chili-600 flex items-center justify-center text-xs font-bold">
                 {userName.charAt(0).toUpperCase()}
               </span>
               {userName.split(' ')[0]}
@@ -123,7 +123,7 @@ export function NavbarClient({ userName, userRole }: NavbarClientProps) {
           <div className="hidden md:flex items-center gap-2">
             <Link
               href="/login"
-              className="text-sm font-medium bg-saffron-500 text-white px-4 py-1.5 rounded-xl hover:bg-saffron-600 transition-colors shadow-sm"
+              className="text-sm font-medium bg-chili-600 text-white px-4 py-1.5 rounded-xl hover:bg-chili-700 transition-colors shadow-sm"
             >
               Sign In
             </Link>
@@ -150,7 +150,7 @@ export function NavbarClient({ userName, userRole }: NavbarClientProps) {
               href={link.href}
               onClick={() => setMobileOpen(false)}
               className={`py-2.5 text-sm font-medium transition-colors ${
-                isActive(link.href) ? 'text-saffron-600' : 'text-masala-800'
+                isActive(link.href) ? 'text-chili-600' : 'text-masala-800'
               }`}
             >
               {link.label}
@@ -172,7 +172,7 @@ export function NavbarClient({ userName, userRole }: NavbarClientProps) {
             </>
           ) : (
             <>
-              <Link href="/login" onClick={() => setMobileOpen(false)} className="py-2.5 text-sm font-medium text-saffron-600">Sign In</Link>
+              <Link href="/login" onClick={() => setMobileOpen(false)} className="py-2.5 text-sm font-medium text-chili-600">Sign In</Link>
             </>
           )}
         </div>

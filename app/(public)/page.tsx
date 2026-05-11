@@ -80,7 +80,7 @@ function ProductCard({ product }: { product: IProduct }) {
   return (
     <Link
       href={`/products/${product._id}`}
-      className="group bg-white rounded-2xl border border-masala-200 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron-400"
+      className="group bg-white rounded-2xl border border-masala-200 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-200 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chili-600"
     >
       <div className="relative aspect-square bg-masala-50 overflow-hidden">
         {hasImage ? (
@@ -115,7 +115,7 @@ function ProductCard({ product }: { product: IProduct }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-xl font-bold text-saffron-600">₹{product.price}</span>
+          <span className="text-xl font-bold text-chili-600">₹{product.price}</span>
           {product.stock > 0 ? (
             <span className="flex items-center gap-1 text-xs text-cardamom-600 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-cardamom-600" />
@@ -127,7 +127,7 @@ function ProductCard({ product }: { product: IProduct }) {
         </div>
 
         <div className="pt-1">
-          <span className="block w-full text-center py-2 rounded-xl bg-saffron-50 text-saffron-700 text-sm font-medium group-hover:bg-saffron-500 group-hover:text-white transition-colors duration-200">
+          <span className="block w-full text-center py-2 rounded-xl bg-masala-100 text-masala-700 text-sm font-medium group-hover:bg-chili-600 group-hover:text-white transition-colors duration-200">
             View Product
           </span>
         </div>
@@ -153,7 +153,7 @@ async function FeaturedGrid() {
       <div className="text-center mt-10 sm:hidden">
         <Link
           href="/products"
-          className="inline-flex items-center gap-2 px-6 py-2.5 border border-saffron-500 text-saffron-600 rounded-xl text-sm font-medium hover:bg-saffron-50 transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-2.5 border border-chili-600 text-chili-600 rounded-xl text-sm font-medium hover:bg-chili-100 transition-colors"
         >
           View All Products <ChevronRight className="w-4 h-4" />
         </Link>
@@ -170,7 +170,7 @@ export default async function HomePage() {
     <div className="overflow-x-hidden">
 
       {/* ── Hero ── */}
-      <section className="relative min-h-[100vh] flex items-center justify-center overflow-hidden bg-[#2D190F]">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#3a211a]">
         <HeroContent whatsappUrl={whatsappUrl} />
       </section>
 
@@ -191,7 +191,7 @@ export default async function HomePage() {
             </div>
             <Link
               href="/products"
-              className="hidden sm:flex items-center gap-1 text-saffron-600 text-sm font-medium hover:text-saffron-700 transition-colors"
+              className="hidden sm:flex items-center gap-1 text-chili-600 text-sm font-medium hover:text-chili-700 transition-colors"
             >
               View All <ChevronRight className="w-4 h-4" />
             </Link>
@@ -219,10 +219,10 @@ export default async function HomePage() {
             {WHY_CARDS.map(({ Icon, title, desc }) => (
               <div
                 key={title}
-                className="group text-center p-8 rounded-3xl bg-masala-50 border border-masala-200 hover:border-saffron-200 hover:bg-saffron-50 transition-all duration-200"
+                className="group text-center p-8 rounded-3xl bg-white border border-masala-200 hover:border-chili-600/30 hover:shadow-md transition-all duration-200"
               >
-                <div className="w-14 h-14 rounded-2xl bg-saffron-100 group-hover:bg-saffron-200 flex items-center justify-center mx-auto mb-5 transition-colors">
-                  <Icon className="w-7 h-7 text-saffron-600" />
+                <div className="w-14 h-14 rounded-2xl bg-chili-100 group-hover:bg-chili-100 flex items-center justify-center mx-auto mb-5 transition-colors">
+                  <Icon className="w-7 h-7 text-chili-600" />
                 </div>
                 <h3 className="font-heading font-semibold text-lg text-masala-900 mb-3">{title}</h3>
                 <p className="text-masala-600 text-sm leading-relaxed">{desc}</p>

@@ -533,7 +533,7 @@ export function ProductForm({ product, onSuccess, onCancel, onDelete }: ProductF
           </button>
         )}
         <Button type="button" variant="ghost" onClick={onCancel} className={onDelete ? '' : 'flex-1'}>Cancel</Button>
-        <Button type="submit" loading={saving} className={onDelete ? 'min-w-[120px]' : 'flex-1'}>
+        <Button type="submit" loading={saving} className={onDelete ? 'min-w-30' : 'flex-1'}>
           {isEdit ? 'Save Changes' : 'Create Product'}
         </Button>
       </div>

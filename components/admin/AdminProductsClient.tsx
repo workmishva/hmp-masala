@@ -25,7 +25,7 @@ function DeleteModal({
   loading:   boolean
 }) {
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
       <div className="bg-white rounded-3xl border border-masala-200 shadow-2xl max-w-sm w-full p-6 space-y-4">
         <div className="text-center">
           <div className="w-12 h-12 bg-chili-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -211,14 +211,14 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
                         onClick={() => handleToggle(product)}
                         disabled={toggling === product._id}
                         className={`relative w-10 h-5.5 rounded-full transition-colors duration-200 ${
-                          product.isActive ? 'bg-saffron-500' : 'bg-masala-300'
+                          product.isActive ? 'bg-chili-600' : 'bg-masala-300'
                         } disabled:opacity-50`}
                         role="switch"
                         aria-checked={product.isActive}
                         aria-label={`${product.isActive ? 'Deactivate' : 'Activate'} ${product.name}`}
                       >
                         <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${
-                          product.isActive ? 'translate-x-[18px]' : 'translate-x-0'
+                          product.isActive ? 'translate-x-4.5' : 'translate-x-0'
                         }`} />
                       </button>
                     </td>
@@ -227,7 +227,7 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
                       <div className="flex items-center gap-1 justify-end">
                         <button
                           onClick={() => openEdit(product)}
-                          className="p-1.5 rounded-lg text-masala-500 hover:text-saffron-600 hover:bg-saffron-50 transition-colors"
+                          className="p-1.5 rounded-lg text-masala-500 hover:text-chili-600 hover:bg-chili-100 transition-colors"
                           aria-label={`Edit ${product.name}`}
                         >
                           <Pencil className="w-4 h-4" />

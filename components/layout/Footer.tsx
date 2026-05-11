@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { MapPin, Phone, Mail, MessageCircle } from 'lucide-react'
 import { getSettings } from '@/lib/getSettings'
 
@@ -39,9 +40,19 @@ export async function Footer() {
 
           {/* ── Brand ── */}
           <div className="flex flex-col gap-6">
-            <span className="text-2xl font-brand font-black text-white tracking-tight">
-              HMP Masala
-            </span>
+            <div className="flex items-center gap-3">
+              <Image
+                src="/images/logo/logo_bg_removed.png"
+                alt="HMP Masala Logo"
+                width={120}
+                height={44}
+                style={{ width: 'auto', height: '44px' }}
+                className="object-contain"
+              />
+              <span className="text-2xl font-brand font-black text-white tracking-tight">
+                HMP Masala
+              </span>
+            </div>
             <p className="text-masala-400 leading-relaxed text-sm max-w-sm">
               Authentic Indian spices, crafted with love and tradition.
               Elevate your everyday meals with the purest ingredients from nature.
@@ -52,7 +63,7 @@ export async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="w-10 h-10 rounded-full bg-masala-800 flex items-center justify-center text-masala-400 hover:bg-saffron-500 hover:text-white transition-colors"
+                className="w-10 h-10 rounded-full bg-masala-800 flex items-center justify-center text-masala-400 hover:bg-chili-600 hover:text-white transition-colors"
               >
                 <FacebookIcon />
               </a>
@@ -61,7 +72,7 @@ export async function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="w-10 h-10 rounded-full bg-masala-800 flex items-center justify-center text-masala-400 hover:bg-saffron-500 hover:text-white transition-colors"
+                className="w-10 h-10 rounded-full bg-masala-800 flex items-center justify-center text-masala-400 hover:bg-chili-600 hover:text-white transition-colors"
               >
                 <InstagramIcon />
               </a>

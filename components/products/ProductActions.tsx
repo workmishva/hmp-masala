@@ -75,7 +75,7 @@ export function ProductActions({
   // ── Price display ───────────────────────────────────────────────────────────
   const priceDisplay = (
     <div className="flex items-baseline gap-2.5 mb-6">
-      <span className="text-4xl font-black text-saffron-600 tabular-nums">
+      <span className="text-4xl font-black text-chili-600 tabular-nums">
         ₹{displayPrice.toLocaleString('en-IN')}
       </span>
       {selectedWeight && (
@@ -93,17 +93,17 @@ export function ProductActions({
     weightUI = (
       <div className="mb-6">
         <p className="text-[11px] font-bold text-masala-400 uppercase tracking-widest mb-2.5">Weight</p>
-        <div className="inline-flex items-center gap-3 bg-saffron-50 border-2 border-saffron-200 rounded-2xl px-4 py-3">
-          <div className="w-5 h-5 rounded-full bg-saffron-500 flex items-center justify-center shrink-0">
+        <div className="inline-flex items-center gap-3 bg-chili-100 border-2 border-chili-600/30 rounded-2xl px-4 py-3">
+          <div className="w-5 h-5 rounded-full bg-chili-600 flex items-center justify-center shrink-0">
             <Check className="w-3 h-3 text-white" strokeWidth={3} />
           </div>
           <div>
-            <p className="text-sm font-black text-saffron-700 leading-tight">{w.weight}</p>
+            <p className="text-sm font-black text-chili-600 leading-tight">{w.weight}</p>
             {w.subtitle && (
               <p className="text-xs text-masala-400 leading-tight mt-0.5">{w.subtitle}</p>
             )}
           </div>
-          <span className="ml-1 text-sm font-bold text-saffron-600">₹{w.price.toLocaleString('en-IN')}</span>
+          <span className="ml-1 text-sm font-bold text-chili-600">₹{w.price.toLocaleString('en-IN')}</span>
         </div>
       </div>
     )
@@ -127,22 +127,22 @@ export function ProductActions({
                 type="button"
                 onClick={() => setSelectedWeight(opt)}
                 aria-pressed={isSelected}
-                className={`relative flex flex-col gap-1.5 rounded-2xl border-2 p-3.5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron-400 active:scale-[0.98] ${
+                className={`relative flex flex-col gap-1.5 rounded-2xl border-2 p-3.5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chili-600 active:scale-[0.98] ${
                   isSelected
-                    ? 'border-saffron-500 bg-gradient-to-br from-saffron-50 to-amber-50/60 shadow-lg shadow-saffron-200/40'
-                    : 'border-masala-200 bg-white hover:border-saffron-300 hover:bg-saffron-50/30 hover:shadow-md hover:-translate-y-0.5'
+                    ? 'border-chili-600 bg-linear-to-br from-chili-100 to-chili-50/60 shadow-lg shadow-chili-600/20'
+                    : 'border-masala-200 bg-white hover:border-chili-600/30 hover:bg-chili-100/20 hover:shadow-md hover:-translate-y-0.5'
                 }`}
               >
                 {/* Selection indicator */}
                 <div className={`absolute top-3 right-3 w-5 h-5 rounded-full flex items-center justify-center transition-all duration-150 ${
-                  isSelected ? 'bg-saffron-500 scale-100' : 'border-2 border-masala-200 bg-white scale-100'
+                  isSelected ? 'bg-chili-600 scale-100' : 'border-2 border-masala-200 bg-white scale-100'
                 }`}>
                   {isSelected && <Check className="w-3 h-3 text-white" strokeWidth={3} />}
                 </div>
 
                 {/* Weight label */}
                 <span className={`text-[15px] font-black leading-none pr-7 transition-colors ${
-                  isSelected ? 'text-saffron-700' : 'text-masala-900'
+                  isSelected ? 'text-chili-600' : 'text-masala-900'
                 }`}>
                   {opt.weight}
                 </span>
@@ -150,7 +150,7 @@ export function ProductActions({
                 {/* Subtitle */}
                 {opt.subtitle && (
                   <span className={`text-[11px] leading-snug transition-colors ${
-                    isSelected ? 'text-saffron-500' : 'text-masala-400'
+                    isSelected ? 'text-chili-600/70' : 'text-masala-400'
                   }`}>
                     {opt.subtitle}
                   </span>
@@ -158,7 +158,7 @@ export function ProductActions({
 
                 {/* Price */}
                 <span className={`text-sm font-bold mt-0.5 transition-colors ${
-                  isSelected ? 'text-saffron-600' : 'text-masala-600'
+                  isSelected ? 'text-chili-600' : 'text-masala-600'
                 }`}>
                   ₹{opt.price.toLocaleString('en-IN')}
                 </span>

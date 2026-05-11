@@ -53,7 +53,7 @@ export function LoginForm() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-saffron-500 to-saffron-700 shadow-lg shadow-saffron-600/25"
+            className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-chili-600 to-chili-700 shadow-lg shadow-chili-600/25"
           >
             <ShieldCheck size={28} className="text-white" />
           </motion.div>
@@ -80,7 +80,7 @@ export function LoginForm() {
                   placeholder="you@example.com"
                   required
                   autoComplete="email"
-                  className="w-full rounded-xl border border-masala-200 bg-masala-50 pl-11 pr-4 py-3.5 text-sm text-masala-900 placeholder:text-masala-400 focus:border-saffron-500 focus:ring-2 focus:ring-saffron-500/20 outline-none transition-all"
+                  className="w-full rounded-xl border border-masala-200 bg-masala-50 pl-11 pr-4 py-3.5 text-sm text-masala-900 placeholder:text-masala-400 focus:border-chili-600 focus:ring-2 focus:ring-chili-600/20 outline-none transition-all"
                 />
               </div>
             </div>
@@ -99,7 +99,7 @@ export function LoginForm() {
                   placeholder="Enter your password"
                   required
                   autoComplete="current-password"
-                  className="w-full rounded-xl border border-masala-200 bg-masala-50 pl-11 pr-12 py-3.5 text-sm text-masala-900 placeholder:text-masala-400 focus:border-saffron-500 focus:ring-2 focus:ring-saffron-500/20 outline-none transition-all"
+                  className="w-full rounded-xl border border-masala-200 bg-masala-50 pl-11 pr-12 py-3.5 text-sm text-masala-900 placeholder:text-masala-400 focus:border-chili-600 focus:ring-2 focus:ring-chili-600/20 outline-none transition-all"
                 />
                 <button
                   type="button"
@@ -115,7 +115,7 @@ export function LoginForm() {
             <button
               type="submit"
               disabled={loading || !email.trim() || !password}
-              className="group mt-2 w-full flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-saffron-500 to-saffron-700 py-3.5 text-sm font-bold text-white shadow-lg shadow-saffron-600/25 hover:shadow-xl hover:shadow-saffron-600/35 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group mt-2 w-full flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-chili-600 to-chili-700 py-3.5 text-sm font-bold text-white shadow-lg shadow-chili-600/25 hover:shadow-xl hover:shadow-chili-600/35 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />

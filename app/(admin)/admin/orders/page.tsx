@@ -116,7 +116,7 @@ export default function AdminOrdersPage() {
             onClick={() => setFilter(s)}
             className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-colors ${
               filter === s
-                ? 'bg-saffron-500 text-white'
+                ? 'bg-chili-600 text-white'
                 : 'bg-white border border-masala-200 text-masala-600 hover:bg-masala-50'
             }`}
           >
@@ -146,7 +146,7 @@ export default function AdminOrdersPage() {
                   <div className="flex items-center gap-4 flex-wrap">
                     <span className="font-mono font-bold text-masala-900 text-sm">{order.verificationCode}</span>
                     <span className="text-sm text-masala-600">{user?.name ?? '—'}</span>
-                    <span className="text-sm font-bold text-saffron-600">
+                    <span className="text-sm font-bold text-chili-600">
                       ₹{order.totalAmount.toLocaleString('en-IN')}
                     </span>
                     <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[order.status] ?? 'bg-masala-100 text-masala-600'}`}>

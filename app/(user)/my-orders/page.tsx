@@ -101,7 +101,7 @@ export default function MyOrdersPage() {
         <p className="text-masala-500 mb-6">Start shopping to see your orders here.</p>
         <Link
           href="/products"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-saffron-500 text-white rounded-xl font-medium hover:bg-saffron-600 transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-chili-600 text-white rounded-xl font-medium hover:bg-chili-700 transition-colors"
         >
           Browse Products
         </Link>
@@ -144,7 +144,7 @@ export default function MyOrdersPage() {
                   </div>
                   <div>
                     <p className="text-xs text-masala-500">Total</p>
-                    <p className="text-sm font-bold text-saffron-600">₹{order.totalAmount.toLocaleString('en-IN')}</p>
+                    <p className="text-sm font-bold text-chili-600">₹{order.totalAmount.toLocaleString('en-IN')}</p>
                   </div>
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[order.status] ?? 'bg-masala-100 text-masala-600'}`}>
                     {order.status}

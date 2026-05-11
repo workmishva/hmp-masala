@@ -75,7 +75,7 @@ function InputField({
 function StepBadge({ n, label }: { n: number; label: string }) {
   return (
     <h2 className="text-lg font-bold text-masala-900 mb-5 flex items-center gap-2.5 font-heading">
-      <span className="w-8 h-8 rounded-full bg-saffron-500 text-white text-sm font-bold flex items-center justify-center shrink-0">
+      <span className="w-8 h-8 rounded-full bg-chili-600 text-white text-sm font-bold flex items-center justify-center shrink-0">
         {n}
       </span>
       {label}
@@ -401,7 +401,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between font-bold text-masala-900 pt-2 border-t border-masala-200">
                   <span>Total</span>
-                  <span className="text-saffron-600 text-xl">₹{subtotal.toLocaleString('en-IN')}</span>
+                  <span className="text-chili-600 text-xl">₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
 
                 <Button
@@ -416,6 +416,12 @@ export default function CheckoutPage() {
 
                 <p className="text-center text-[10px] text-masala-400">
                   Secure checkout · You will verify via WhatsApp
+                </p>
+                <p className="text-center text-[10px] text-masala-400 leading-relaxed">
+                  * By clicking on checkout you agree to our{' '}
+                  <span className="text-blue-500 hover:text-blue-600 hover:underline cursor-pointer transition-colors">Terms</span>
+                  {' '}&amp;{' '}
+                  <span className="text-blue-500 hover:text-blue-600 hover:underline cursor-pointer transition-colors">Shipping Policy</span>.
                 </p>
               </div>
             </div>

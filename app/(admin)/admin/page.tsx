@@ -125,7 +125,7 @@ export default function AdminDashboard() {
           label="Products"
           value={stats.totalProducts}
           icon={Package}
-          color="bg-saffron-100 text-saffron-600"
+          color="bg-chili-100 text-chili-600"
         />
         <StatCard
           label="Total Orders"
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-bold text-saffron-600">
+                  <span className="text-sm font-bold text-chili-600">
                     ₹{order.totalAmount.toLocaleString('en-IN')}
                   </span>
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[order.status] ?? 'bg-masala-100 text-masala-600'}`}>

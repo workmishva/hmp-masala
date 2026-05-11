@@ -8,39 +8,39 @@
   --font-body:    var(--font-inter), sans-serif;
   --font-brand:   var(--font-playfair), serif;
 
-  /* === Saffron (primary) === */
-  --color-saffron-50:  #FFFBEB;
-  --color-saffron-100: #FEF3C7;
-  --color-saffron-200: #FDE68A;
-  --color-saffron-400: #FBBF24;
-  --color-saffron-500: #F59E0B;
-  --color-saffron-600: #D97706;
-  --color-saffron-700: #B45309;
-  --color-saffron-900: #78350F;
+  /* === Saffron → Golden Yellow (old project brand-secondary #e9a21c) === */
+  --color-saffron-50:  #fffdf5;
+  --color-saffron-100: #fff7e0;
+  --color-saffron-200: #fde9a0;
+  --color-saffron-400: #f0b840;
+  --color-saffron-500: #e9a21c;
+  --color-saffron-600: #c8891a;
+  --color-saffron-700: #a56f15;
+  --color-saffron-900: #6b4708;
 
-  /* === Chili (danger/sale) === */
-  --color-chili-100: #FEE2E2;
-  --color-chili-500: #EF4444;
-  --color-chili-600: #DC2626;
-  --color-chili-700: #B91C1C;
+  /* === Chili → Firebrick Red (old project brand-primary #b22222) === */
+  --color-chili-100: #fce8e8;
+  --color-chili-500: #c52626;
+  --color-chili-600: #b22222;
+  --color-chili-700: #9a1c1c;
 
-  /* === Cardamom (success/stock) === */
-  --color-cardamom-100: #DCFCE7;
-  --color-cardamom-600: #16A34A;
-  --color-cardamom-700: #15803D;
+  /* === Cardamom → Forest Green (old project brand-tertiary #4c7b30) === */
+  --color-cardamom-100: #e8f0e3;
+  --color-cardamom-600: #4c7b30;
+  --color-cardamom-700: #3d6126;
 
-  /* === Masala neutrals (change in dark mode via .dark override below) === */
-  --color-masala-950: #1C0A00;
-  --color-masala-900: #292524;
-  --color-masala-800: #44403C;
-  --color-masala-700: #44403C;
-  --color-masala-600: #57534E;
-  --color-masala-500: #78716C;
-  --color-masala-400: #A8A29E;
-  --color-masala-300: #D6D3D1;
-  --color-masala-200: #E7E5E4;
-  --color-masala-100: #F5F5F4;
-  --color-masala-50:  #FAFAF9;
+  /* === Masala → Warm Brown (old project brand-neutral #5d4037) === */
+  --color-masala-950: #2d1510;
+  --color-masala-900: #3d231b;
+  --color-masala-800: #4a3028;
+  --color-masala-700: #5d4037;
+  --color-masala-600: #6e4e3e;
+  --color-masala-500: #8e6a58;
+  --color-masala-400: #b8947f;
+  --color-masala-300: #d4b8aa;
+  --color-masala-200: #e8d6cc;
+  --color-masala-100: #f6ede7;
+  --color-masala-50:  #fdf8f5;
 
   /* === Shadows === */
   --shadow-card:       0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
@@ -67,17 +67,17 @@
    Accent colors (saffron, cardamom, chili) stay the same in both modes.
    =================================================================== */
 .dark {
-  --color-masala-950: #faf8f6;
-  --color-masala-900: #f0ece8;
-  --color-masala-800: #d6d0cb;
-  --color-masala-700: #b0a89f;
-  --color-masala-600: #8a7f77;
-  --color-masala-500: #6b5f58;
-  --color-masala-400: #4e433d;
-  --color-masala-300: #3a2e29;
-  --color-masala-200: #2d2019;
-  --color-masala-100: #211510;
-  --color-masala-50:  #160d09;
+  --color-masala-950: #fdf8f6;
+  --color-masala-900: #f0e8e5;
+  --color-masala-800: #dfc5bb;
+  --color-masala-700: #c4988a;
+  --color-masala-600: #a07060;
+  --color-masala-500: #7a5546;
+  --color-masala-400: #5d4037;
+  --color-masala-300: #4a3028;
+  --color-masala-200: #36201a;
+  --color-masala-100: #251410;
+  --color-masala-50:  #1a0c08;
 }
 
 /* === Base resets === */
@@ -100,7 +100,7 @@ body {
 
 /* === Focus ring === */
 :focus-visible {
-  outline: 2px solid var(--color-saffron-500);
+  outline: 2px solid var(--color-chili-600);
   outline-offset: 2px;
 }
 

@@ -41,3 +41,4 @@ writeFileSync(join(appDir, 'favicon.ico'), icoBuf)
 console.log('✓ app/favicon.ico  (16, 32, 48)')
 
 console.log('\nAll icons generated.')
+

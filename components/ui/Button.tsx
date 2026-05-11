@@ -14,7 +14,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary:   'bg-saffron-500 text-white shadow-md hover:bg-saffron-600 active:scale-[0.97]',
+  primary:   'bg-chili-600 text-white shadow-md hover:bg-chili-700 active:scale-[0.97]',
   secondary: 'border border-saffron-500 text-saffron-600 bg-transparent hover:bg-saffron-50 active:scale-[0.97]',
   danger:    'bg-chili-600 text-white hover:bg-chili-700 active:scale-[0.97]',
   ghost:     'text-masala-800 hover:bg-masala-100 active:scale-[0.97]',
@@ -41,9 +41,9 @@ export function Button({
       className={`
         inline-flex items-center justify-center gap-2 font-medium
         transition-all duration-150 cursor-pointer
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron-400
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chili-600
         disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
-        min-w-[120px]
+        min-w-30
         ${variantStyles[variant]}
         ${sizeStyles[size]}
         ${className}

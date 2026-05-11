@@ -36,23 +36,23 @@ export function WeightSelector({ basePrice, selected, onChange }: WeightSelector
               type="button"
               onClick={() => onChange(opt)}
               aria-pressed={isSelected}
-              className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron-400 ${
+              className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chili-600 ${
                 isSelected
-                  ? 'border-saffron-500 bg-saffron-50 shadow-sm'
-                  : 'border-masala-200 hover:border-saffron-300 hover:bg-saffron-50/50'
+                  ? 'border-chili-600 bg-chili-100 shadow-sm'
+                  : 'border-masala-200 hover:border-chili-600/30 hover:bg-chili-100/30'
               }`}
             >
               {isSelected ? (
-                <CheckCircle2 className="w-4 h-4 text-saffron-600 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-chili-600 shrink-0" />
               ) : (
                 <span className="w-4 h-4 rounded-full border-2 border-masala-300 shrink-0" />
               )}
               <div className="min-w-0">
                 <div className="flex items-baseline gap-1.5 flex-wrap">
-                  <span className={`text-sm font-semibold ${isSelected ? 'text-saffron-700' : 'text-masala-900'}`}>
+                  <span className={`text-sm font-semibold ${isSelected ? 'text-chili-600' : 'text-masala-900'}`}>
                     {opt.label}
                   </span>
-                  <span className={`text-xs font-bold ${isSelected ? 'text-saffron-600' : 'text-masala-600'}`}>
+                  <span className={`text-xs font-bold ${isSelected ? 'text-chili-600' : 'text-masala-600'}`}>
                     ₹{price.toLocaleString('en-IN')}
                   </span>
                 </div>

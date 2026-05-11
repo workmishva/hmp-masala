@@ -27,7 +27,7 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
     >
       <Link
         href={`/products/${product._id}`}
-        className={`group block bg-white dark:bg-masala-100 rounded-3xl border border-masala-200 shadow-card hover:shadow-card-hover hover:-translate-y-2 transition-all duration-300 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron-400 ${
+        className={`group block bg-white dark:bg-masala-100 rounded-3xl border border-masala-200 shadow-card hover:shadow-card-hover hover:-translate-y-2 transition-all duration-300 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chili-600 ${
           isOOS ? 'opacity-80' : ''
         }`}
       >
@@ -51,7 +51,7 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
           )}
 
           {/* Category badge — top left */}
-          <span className="absolute top-3 left-3 flex items-center gap-1 bg-white/90 dark:bg-masala-100/90 backdrop-blur-sm text-saffron-700 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+          <span className="absolute top-3 left-3 flex items-center gap-1 bg-white/90 dark:bg-masala-100/90 backdrop-blur-sm text-masala-700 text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
             <CatIcon size={11} strokeWidth={2.5} />
             {product.category}
           </span>
@@ -80,7 +80,7 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
           <div className="flex items-center justify-between border-t border-masala-100 pt-3">
             <div className="flex flex-col">
               <span className="text-[10px] font-semibold uppercase tracking-widest text-masala-400">Price</span>
-              <span className="text-xl font-black text-saffron-600">₹{product.price}</span>
+              <span className="text-xl font-black text-chili-600">₹{product.price}</span>
             </div>
             {product.stock > 10 ? (
               <span className="flex items-center gap-1.5 text-xs text-cardamom-600 font-semibold">
@@ -98,7 +98,7 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
           </div>
 
           {/* CTA bar */}
-          <div className="w-full py-2.5 rounded-xl bg-masala-50 dark:bg-masala-200 text-masala-700 text-sm font-semibold text-center group-hover:bg-saffron-500 group-hover:text-white transition-all duration-200">
+          <div className="w-full py-2.5 rounded-xl bg-masala-100 dark:bg-masala-200 text-masala-700 text-sm font-semibold text-center group-hover:bg-chili-600 group-hover:text-white transition-all duration-200">
             View Product →
           </div>
         </div>

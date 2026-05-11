@@ -113,7 +113,7 @@ export function StickyFilterBar({ total }: { total?: number }) {
               onClick={() => update('category', '')}
               className={`rounded-full px-6 py-2 text-sm font-bold transition-all whitespace-nowrap ${
                 !currentCategory
-                  ? 'bg-saffron-500 text-white shadow-lg'
+                  ? 'bg-chili-600 text-white shadow-lg'
                   : 'text-masala-500 hover:text-masala-900'
               }`}
             >
@@ -130,7 +130,7 @@ export function StickyFilterBar({ total }: { total?: number }) {
                   onClick={() => update('category', active ? '' : cat)}
                   className={`flex items-center gap-1.5 rounded-full px-5 py-2 text-sm font-bold transition-all whitespace-nowrap ${
                     active
-                      ? 'bg-saffron-500 text-white shadow-lg'
+                      ? 'bg-chili-600 text-white shadow-lg'
                       : 'text-masala-500 hover:text-masala-900'
                   }`}
                 >

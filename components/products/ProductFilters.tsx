@@ -55,7 +55,7 @@ export function ProductFilters() {
             onClick={() => updateParam('category', '')}
             className={`w-full text-left text-sm px-3 py-2 rounded-xl transition-colors ${
               !currentCategory
-                ? 'bg-saffron-100 text-saffron-700 font-semibold'
+                ? 'bg-chili-100 text-chili-600 font-semibold'
                 : 'text-masala-700 hover:bg-masala-100'
             }`}
           >
@@ -70,7 +70,7 @@ export function ProductFilters() {
                 onClick={() => updateParam('category', currentCategory === cat ? '' : cat)}
                 className={`flex items-center gap-2 w-full text-left text-sm px-3 py-2 rounded-xl transition-colors ${
                   currentCategory === cat
-                    ? 'bg-saffron-100 text-saffron-700 font-semibold'
+                    ? 'bg-chili-100 text-chili-600 font-semibold'
                     : 'text-masala-700 hover:bg-masala-100'
                 }`}
               >

@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { NextResponse } from 'next/server'
 import { format, subDays } from 'date-fns'
 import { auth } from '@/lib/auth'

@@ -31,7 +31,7 @@ export function ProductTabs({ description }: ProductTabsProps) {
             onClick={() => setActive(tab)}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
               active === tab
-                ? 'border-saffron-500 text-saffron-700'
+                ? 'border-chili-600 text-chili-600'
                 : 'border-transparent text-masala-500 hover:text-masala-700'
             }`}
           >

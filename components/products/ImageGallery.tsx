@@ -60,7 +60,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
                   key={i}
                   onClick={() => setActive(i)}
                   className={`w-1.5 h-1.5 rounded-full transition-all ${
-                    i === active ? 'bg-saffron-500 w-4' : 'bg-white/70'
+                    i === active ? 'bg-chili-600 w-4' : 'bg-white/70'
                   }`}
                   aria-label={`View image ${i + 1}`}
                 />

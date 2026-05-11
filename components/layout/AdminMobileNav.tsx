@@ -31,9 +31,9 @@ export function AdminMobileNav() {
               key={href}
               href={href}
               aria-current={active ? 'page' : undefined}
-              className={`flex flex-col items-center gap-1 px-4 py-3 text-[10px] font-medium transition-colors whitespace-nowrap min-w-[64px] ${
+              className={`flex flex-col items-center gap-1 px-4 py-3 text-[10px] font-medium transition-colors whitespace-nowrap min-w-16 ${
                 active
-                  ? 'text-saffron-400 border-b-2 border-saffron-400'
+                  ? 'text-chili-500 border-b-2 border-chili-500'
                   : 'text-masala-400 hover:text-masala-200'
               }`}
             >

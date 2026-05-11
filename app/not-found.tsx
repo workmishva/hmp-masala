@@ -16,13 +16,13 @@ export default function NotFound() {
           <div className="flex gap-4 justify-center">
             <Link
               href="/"
-              className="px-6 py-2.5 bg-saffron-500 text-white font-medium rounded-xl hover:bg-saffron-600 transition-colors shadow-md"
+              className="px-6 py-2.5 bg-chili-600 text-white font-medium rounded-xl hover:bg-chili-700 transition-colors shadow-md"
             >
               Go Home
             </Link>
             <Link
               href="/products"
-              className="px-6 py-2.5 border border-saffron-500 text-saffron-600 font-medium rounded-xl hover:bg-saffron-50 transition-colors"
+              className="px-6 py-2.5 border border-chili-600 text-chili-600 font-medium rounded-xl hover:bg-chili-100 transition-colors"
             >
               Browse Products
             </Link>

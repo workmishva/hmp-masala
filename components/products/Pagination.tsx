@@ -51,7 +51,7 @@ export function Pagination({ currentPage, totalPages, total }: PaginationProps) 
                 onClick={() => goTo(page)}
                 className={`w-9 h-9 rounded-xl text-sm font-medium transition-colors ${
                   page === currentPage
-                    ? 'bg-saffron-500 text-white'
+                    ? 'bg-chili-600 text-white'
                     : 'border border-masala-200 text-masala-700 hover:bg-masala-100'
                 }`}
               >

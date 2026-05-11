@@ -132,7 +132,7 @@ export default function ProfilePage() {
         className="rounded-2xl border border-masala-200 bg-white shadow-card overflow-hidden"
       >
         {/* Banner */}
-        <div className="h-14 bg-gradient-to-r from-saffron-500 via-saffron-600 to-masala-900 relative">
+        <div className="h-14 bg-linear-to-r from-saffron-500 via-saffron-600 to-masala-900 relative">
           <div className="absolute inset-0 opacity-20"
             style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 60%)' }}
           />
@@ -141,7 +141,7 @@ export default function ProfilePage() {
         <div className="px-5 py-5">
           {/* Avatar row */}
           <div className="flex items-center justify-between gap-3 mb-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-saffron-500 to-saffron-600 border-4 border-white shadow-md text-xl font-black text-white">
+            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-linear-to-br from-saffron-500 to-saffron-600 border-4 border-white shadow-md text-xl font-black text-white">
               {avatarLetter}
             </div>
 
@@ -164,7 +164,7 @@ export default function ProfilePage() {
                   <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-saffron-500 to-saffron-600 px-3 py-1.5 text-xs font-bold text-white hover:shadow-md transition-all disabled:opacity-50"
+                    className="flex items-center gap-1.5 rounded-lg bg-linear-to-r from-saffron-500 to-saffron-600 px-3 py-1.5 text-xs font-bold text-white hover:shadow-md transition-all disabled:opacity-50"
                   >
                     {saving
                       ? <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -268,12 +268,12 @@ export default function ProfilePage() {
                 { label: 'Address',      value: profile?.address, icon: MapPin  },
               ].map(({ label, value, icon: Icon }) => (
                 <div key={label} className="flex items-center gap-4 py-4 first:pt-0 last:pb-0">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-saffron-50">
-                    <Icon size={16} className="text-saffron-600" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-chili-100">
+                    <Icon size={16} className="text-chili-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-wider text-masala-400">{label}</p>
-                    <p className="mt-0.5 text-sm font-semibold text-masala-800 break-words">{value || '—'}</p>
+                    <p className="mt-0.5 text-sm font-semibold text-masala-800 wrap-break-word">{value || '—'}</p>
                   </div>
                 </div>
               ))}

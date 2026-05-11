@@ -189,7 +189,7 @@ export function ReviewSection({ productId }: { productId: string }) {
           <button
             type="button"
             onClick={() => setShowForm((v) => !v)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-saffron-400/40 text-saffron-600 bg-transparent text-sm font-medium hover:bg-saffron-50/60 hover:border-saffron-400/70 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-saffron-400"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-chili-600/40 text-chili-600 bg-transparent text-sm font-medium hover:bg-chili-100/60 hover:border-chili-600/70 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chili-600"
             aria-expanded={showForm}
             aria-controls="review-form"
           >
@@ -206,7 +206,7 @@ export function ReviewSection({ productId }: { productId: string }) {
             <>
               <LogIn size={15} className="shrink-0 text-masala-400" />
               <span>
-                <a href="/login" className="text-saffron-600 font-medium hover:underline">Sign in</a>
+                <a href="/login" className="text-chili-600 font-medium hover:underline">Sign in</a>
                 {' '}to leave a review — only customers with a delivered order can review products.
               </span>
             </>
@@ -239,9 +239,9 @@ export function ReviewSection({ productId }: { productId: string }) {
         <>
           {/* Review form — shown when eligible and user has opened it */}
           {data.canReview && showForm && (
-            <div id="review-form" className="bg-saffron-50 border border-saffron-200 rounded-2xl p-6 mb-8">
+            <div id="review-form" className="bg-chili-100 border border-chili-600/20 rounded-2xl p-6 mb-8">
               <h3 className="font-heading font-semibold text-masala-900 mb-4 flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-saffron-600" />
+                <MessageSquare className="w-5 h-5 text-chili-600" />
                 Share Your Experience
               </h3>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -262,14 +262,14 @@ export function ReviewSection({ productId }: { productId: string }) {
                     maxLength={500}
                     rows={3}
                     placeholder="What did you think about this product?"
-                    className="w-full border border-masala-200 rounded-xl px-4 py-3 text-sm text-masala-900 bg-white placeholder:text-masala-400 focus:outline-none focus:ring-2 focus:ring-saffron-400/50 focus:border-saffron-500 resize-none"
+                    className="w-full border border-masala-200 rounded-xl px-4 py-3 text-sm text-masala-900 bg-white placeholder:text-masala-400 focus:outline-none focus:ring-2 focus:ring-chili-600/40 focus:border-chili-600 resize-none"
                   />
                   <p className="text-xs text-masala-400 mt-1 text-right">{comment.length}/500</p>
                 </div>
                 <button
                   type="submit"
                   disabled={submitting || rating === 0}
-                  className="px-6 py-2.5 bg-saffron-500 hover:bg-saffron-600 text-white font-semibold text-sm rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                  className="px-6 py-2.5 bg-chili-600 hover:bg-chili-700 text-white font-semibold text-sm rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {submitting ? (
                     <>

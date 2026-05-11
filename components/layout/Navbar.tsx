@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { auth } from '@/lib/auth'
 import { NavbarClient } from './NavbarClient'
 
@@ -27,8 +28,16 @@ export function Navbar() {
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-masala-100/95 backdrop-blur-sm border-b border-masala-200">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between relative">
         {/* Logo — always static, renders instantly */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <span className="text-2xl font-brand font-bold text-saffron-600 tracking-tight">
+        <Link href="/" className="flex items-center gap-3 shrink-0">
+          <Image
+            src="/images/logo/logo_bg_removed.png"
+            alt="HMP Masala Logo"
+            width={120}
+            height={44}
+            style={{ width: 'auto', height: '44px' }}
+            className="object-contain"
+          />
+          <span className="text-2xl font-brand font-black text-saffron-600 tracking-tight">
             HMP Masala
           </span>
         </Link>

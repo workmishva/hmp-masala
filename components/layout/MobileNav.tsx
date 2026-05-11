@@ -31,19 +31,19 @@ export function MobileNav() {
             <Link
               key={href}
               href={href}
-              className={`relative flex flex-col items-center justify-center gap-1 transition-colors min-h-[44px] ${
-                active ? 'text-saffron-600' : 'text-masala-500'
+              className={`relative flex flex-col items-center justify-center gap-1 transition-colors min-h-11 ${
+                active ? 'text-chili-600' : 'text-masala-500'
               }`}
               aria-current={active ? 'page' : undefined}
               aria-label={badge ? `${label}, ${badge} item${badge !== 1 ? 's' : ''}` : label}
             >
               <div className="relative">
                 <Icon
-                  className={`w-5 h-5 ${active ? 'fill-saffron-100' : ''}`}
+                  className={`w-5 h-5 ${active ? 'fill-chili-100' : ''}`}
                   strokeWidth={active ? 2.5 : 1.75}
                 />
                 {!!badge && (
-                  <span className="absolute -top-1 -right-1.5 bg-saffron-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
+                  <span className="absolute -top-1 -right-1.5 bg-chili-600 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
                     {badge > 9 ? '9+' : badge}
                   </span>
                 )}

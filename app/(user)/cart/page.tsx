@@ -180,7 +180,7 @@ export default function CartPage() {
                       </Link>
                       <p className="text-xs text-masala-500 mt-0.5">₹{unitPrice.toLocaleString('en-IN')} each</p>
                     </div>
-                    <p className="font-bold text-saffron-600 text-lg shrink-0">
+                    <p className="font-bold text-chili-600 text-lg shrink-0">
                       ₹{(unitPrice * item.qty).toLocaleString('en-IN')}
                     </p>
                   </div>
@@ -238,7 +238,7 @@ export default function CartPage() {
               <hr className="border-masala-200" />
               <div className="flex justify-between font-bold text-masala-900">
                 <span>Total</span>
-                <span className="text-saffron-600 text-xl">₹{subtotal.toLocaleString('en-IN')}</span>
+                <span className="text-chili-600 text-xl">₹{subtotal.toLocaleString('en-IN')}</span>
               </div>
             </div>
 

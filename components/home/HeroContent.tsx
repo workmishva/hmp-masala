@@ -149,7 +149,7 @@ export function HeroContent({ whatsappUrl }: { whatsappUrl: string }) {
 
       {/* ── OVERLAYS ── */}
       {/* Cinematic dark gradient */}
-      <div className="absolute inset-0 z-1 bg-linear-to-b from-[rgba(45,25,15,0.88)] via-[rgba(45,25,15,0.72)] to-[rgba(45,25,15,0.94)]" />
+      <div className="absolute inset-0 z-1 bg-linear-to-b from-[rgba(58,33,26,0.88)] via-[rgba(58,33,26,0.72)] to-[rgba(58,33,26,0.94)]" />
       {/* Warm radial spotlight */}
       <div className="absolute inset-0 z-1 bg-[radial-gradient(ellipse_at_center,rgba(233,162,28,0.12)_0%,transparent_70%)]" />
       {/* Film grain */}
@@ -167,8 +167,8 @@ export function HeroContent({ whatsappUrl }: { whatsappUrl: string }) {
       </div>
 
       {/* ── EDGE FADES (blend strips into section bg) ── */}
-      <div className="absolute top-0 left-0 right-0 h-32 z-2 bg-linear-to-b from-[rgba(45,25,15,1)] to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-40 z-2 bg-linear-to-t from-[rgba(45,25,15,1)] to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-32 z-2 bg-linear-to-b from-[rgba(58,33,26,1)] to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 z-2 bg-linear-to-t from-[rgba(58,33,26,1)] to-transparent" />
 
       {/* ── CONTENT ── */}
       <div className="relative z-10 container mx-auto px-6 md:px-12 flex flex-col items-center text-center pt-28 pb-16">
@@ -211,7 +211,7 @@ export function HeroContent({ whatsappUrl }: { whatsappUrl: string }) {
               <motion.span
                 style={{
                   backgroundSize:        '200% auto',
-                  backgroundImage:       'linear-gradient(90deg, #D97706, #F59E0B, #FBBF24, #F59E0B, #D97706)',
+                  backgroundImage:       'linear-gradient(90deg, #b22222, #e9a21c, #f0b840, #e9a21c, #b22222)',
                   WebkitBackgroundClip:  'text',
                   WebkitTextFillColor:   'transparent',
                   backgroundClip:        'text',
@@ -244,9 +244,9 @@ export function HeroContent({ whatsappUrl }: { whatsappUrl: string }) {
                 />
                 <defs>
                   <linearGradient id="hero-underline-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%"   stopColor="#D97706" />
-                    <stop offset="50%"  stopColor="#F59E0B" />
-                    <stop offset="100%" stopColor="#D97706" />
+                    <stop offset="0%"   stopColor="#b22222" />
+                    <stop offset="50%"  stopColor="#e9a21c" />
+                    <stop offset="100%" stopColor="#b22222" />
                   </linearGradient>
                 </defs>
               </motion.svg>
@@ -274,7 +274,7 @@ export function HeroContent({ whatsappUrl }: { whatsappUrl: string }) {
           >
             <Link
               href="/products"
-              className="group relative w-full sm:w-auto px-9 py-4 bg-linear-to-r from-saffron-600 to-saffron-500 hover:from-saffron-700 hover:to-saffron-600 text-white rounded-full font-bold text-lg transition-all shadow-2xl flex items-center justify-center gap-2.5 overflow-hidden"
+              className="group relative w-full sm:w-auto px-9 py-4 bg-linear-to-r from-chili-600 to-chili-500 hover:from-chili-700 hover:to-chili-600 text-white rounded-full font-bold text-lg transition-all shadow-2xl shadow-chili-600/30 flex items-center justify-center gap-2.5 overflow-hidden"
             >
               <motion.div
                 className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent rounded-full"
