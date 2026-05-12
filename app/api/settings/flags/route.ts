@@ -12,6 +12,7 @@ export async function GET() {
         whatsappVerificationEnabled: true,
         whatsappNumber:              '',
         storeName:                   'HMP Masala',
+        darkModeEnabled:             false,
       })
     }
     return NextResponse.json({ data: settings })

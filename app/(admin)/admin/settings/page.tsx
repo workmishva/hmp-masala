@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { MessageCircle, Save, Settings2, AlertTriangle, Download, Trash2, X } from 'lucide-react'
+import { MessageCircle, Save, Settings2, AlertTriangle, Download, Trash2, X, Palette } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
@@ -12,6 +12,7 @@ interface Settings {
   whatsappVerificationEnabled: boolean
   whatsappNumber: string
   storeName: string
+  darkModeEnabled: boolean
   lastResetAt?: string
 }
 
@@ -279,6 +280,32 @@ export default function AdminSettingsPage() {
               />
             </div>
           </div>
+        </div>
+
+        {/* Appearance */}
+        <div className="bg-white dark:bg-masala-100 border border-masala-200 rounded-2xl p-5 shadow-card">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 bg-masala-100 rounded-lg flex items-center justify-center">
+              <Palette className="w-4 h-4 text-masala-600" />
+            </div>
+            <h2 className="font-heading font-semibold text-masala-900">Appearance</h2>
+          </div>
+
+          <div className="divide-y divide-masala-100">
+            <Toggle
+              label="Allow Dark Mode for Customers"
+              description="When ON, customers can switch between light and dark theme. When OFF, light mode is enforced and the toggle is hidden from the customer UI. Admins always retain dark mode access."
+              checked={settings.darkModeEnabled}
+              onChange={(v) => update('darkModeEnabled', v)}
+            />
+          </div>
+
+          {!settings.darkModeEnabled && (
+            <p className="mt-3 text-xs text-masala-400 flex items-center gap-1.5">
+              <span className="inline-block w-2 h-2 rounded-full bg-saffron-400 shrink-0" />
+              Light mode is currently enforced for all customers.
+            </p>
+          )}
         </div>
 
         <Button onClick={handleSave} loading={saving} className="gap-2">

@@ -2,14 +2,17 @@ import { Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { auth } from '@/lib/auth'
+import { getSettings } from '@/lib/settings'
 import { NavbarClient } from './NavbarClient'
 
 async function NavbarAuthState() {
-  const session = await auth()
+  const [session, settings] = await Promise.all([auth(), getSettings()])
+  const isAdmin = session?.user?.role === 'admin'
   return (
     <NavbarClient
       userName={session?.user?.name ?? undefined}
       userRole={session?.user?.role ?? undefined}
+      darkModeEnabled={isAdmin ? true : settings.darkModeEnabled}
     />
   )
 }

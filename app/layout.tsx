@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans, Inter, Playfair_Display } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
+import { auth } from '@/lib/auth'
+import { getSettings } from '@/lib/settings'
 import { Providers } from '@/components/Providers'
 import { PWAInstallPrompt } from '@/components/ui/PWAInstallPrompt'
 import './globals.css'
@@ -56,7 +58,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const [session, settings] = await Promise.all([auth(), getSettings()])
+  // Admins always retain dark-mode access regardless of the global toggle
+  const darkModeEnabled = session?.user?.role === 'admin' ? true : settings.darkModeEnabled
+
   return (
     <html lang="en" className={`${jakarta.variable} ${inter.variable} ${playfair.variable}`} suppressHydrationWarning data-scroll-behavior="smooth">
       <body>
@@ -66,7 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        <Providers>
+        <Providers darkModeEnabled={darkModeEnabled}>
           {children}
           <PWAInstallPrompt />
         </Providers>

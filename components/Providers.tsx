@@ -4,10 +4,21 @@ import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import { CartProvider } from '@/context/CartContext'
 
-export function Providers({ children }: { children: React.ReactNode }) {
+interface ProvidersProps {
+  children: React.ReactNode
+  darkModeEnabled?: boolean
+}
+
+export function Providers({ children, darkModeEnabled = true }: ProvidersProps) {
   return (
     <SessionProvider>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="light"
+        enableSystem={false}
+        disableTransitionOnChange
+        forcedTheme={darkModeEnabled ? undefined : 'light'}
+      >
         <CartProvider>
           {children}
         </CartProvider>

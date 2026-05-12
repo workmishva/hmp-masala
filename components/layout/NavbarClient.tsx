@@ -11,6 +11,7 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle'
 interface NavbarClientProps {
   userName?: string
   userRole?: string
+  darkModeEnabled?: boolean
 }
 
 const navLinks = [
@@ -18,7 +19,7 @@ const navLinks = [
   { href: '/products', label: 'Products' },
 ]
 
-export function NavbarClient({ userName, userRole }: NavbarClientProps) {
+export function NavbarClient({ userName, userRole, darkModeEnabled = false }: NavbarClientProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const pathname   = usePathname()
@@ -46,8 +47,8 @@ export function NavbarClient({ userName, userRole }: NavbarClientProps) {
 
       {/* Right actions */}
       <div className="flex items-center gap-2">
-        {/* Theme toggle */}
-        <ThemeToggle />
+        {/* Theme toggle — only shown when dark mode is enabled for this user */}
+        {darkModeEnabled && <ThemeToggle />}
 
         {/* Cart */}
         <Link

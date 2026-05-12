@@ -5,6 +5,7 @@ export interface SettingsDocument extends Document {
   whatsappVerificationEnabled: boolean
   whatsappNumber: string
   storeName: string
+  darkModeEnabled: boolean
   lastResetAt?: Date
 }
 
@@ -14,6 +15,7 @@ const SettingsSchema = new Schema<SettingsDocument>(
     whatsappVerificationEnabled: { type: Boolean, default: true },
     whatsappNumber:              { type: String, default: '' },
     storeName:                   { type: String, default: 'HMP Masala' },
+    darkModeEnabled:             { type: Boolean, default: false },
     lastResetAt:                 { type: Date },
   },
   { timestamps: true }
