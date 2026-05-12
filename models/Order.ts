@@ -36,7 +36,7 @@ const OrderItemSchema = new Schema<OrderItemSubdoc>(
 
 const OrderSchema = new Schema<OrderDocument>(
   {
-    userId:           { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    userId:           { type: Schema.Types.ObjectId, ref: 'User', required: false },
     items:            [OrderItemSchema],
     totalAmount:      { type: Number, required: true, min: 0 },
     deliveryAddress:  { type: String, required: true },

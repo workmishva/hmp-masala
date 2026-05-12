@@ -54,7 +54,7 @@ export function RegisterForm() {
       }
 
       toast.success('Welcome to HMP Masala!')
-      router.push('/')
+      router.push('/profile/setup')
       router.refresh()
     } catch {
       toast.error('Registration failed. Please try again.')

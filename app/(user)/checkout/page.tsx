@@ -103,12 +103,24 @@ export default function CheckoutPage() {
         const { data } = await res.json()
         if (!data?.items?.length) { router.push('/cart'); return }
         setItems(data.items)
-        // Pre-fill phone from profile if available
+        // Pre-fill address fields from saved profile
         const pr = await fetch('/api/user/profile')
         if (pr.ok) {
           const { data: profile } = await pr.json()
-          if (profile?.phone) {
-            setAddress((prev) => ({ ...prev, phone: profile.phone }))
+          if (profile) {
+            setAddress((prev) => ({
+              ...prev,
+              firstName: profile.firstName || prev.firstName,
+              surname:   profile.lastName  || prev.surname,
+              phone:     profile.phone     || prev.phone,
+              house:     profile.house     || prev.house,
+              street:    profile.street    || prev.street,
+              nearby:    profile.landmark  || prev.nearby,
+              city:      profile.city      || prev.city,
+              district:  profile.district  || prev.district,
+              state:     profile.state     || prev.state,
+              pincode:   profile.pincode   || prev.pincode,
+            }))
           }
         }
       }

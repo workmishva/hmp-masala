@@ -3,12 +3,24 @@ import { Types } from 'mongoose'
 export type UserRole = 'admin' | 'enduser'
 
 export interface IUser {
-  _id: string
-  name: string
-  email: string
-  phone: string
-  role: UserRole
+  _id:    string
+  name:   string
+  email:  string
+  phone:  string
+  role:   UserRole
+  // Legacy
   address?: string
+  // Structured profile
+  firstName?: string
+  lastName?:  string
+  house?:     string
+  street?:    string
+  landmark?:  string
+  city?:      string
+  district?:  string
+  state?:     string
+  pincode?:   string
+  profileCompleted: boolean
   createdAt: Date
 }
 

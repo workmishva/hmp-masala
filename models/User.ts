@@ -1,12 +1,24 @@
 import mongoose, { Schema, Document, Model } from 'mongoose'
 
 export interface UserDocument extends Document {
-  name: string
-  email: string
-  phone: string
+  name:     string
+  email:    string
+  phone:    string
   password: string
-  role: 'admin' | 'enduser'
+  role:     'admin' | 'enduser'
+  // Legacy single-string address (kept for backward compat)
   address?: string
+  // Structured profile fields
+  firstName?: string
+  lastName?:  string
+  house?:     string
+  street?:    string
+  landmark?:  string
+  city?:      string
+  district?:  string
+  state?:     string
+  pincode?:   string
+  profileCompleted: boolean
   createdAt: Date
 }
 
@@ -18,11 +30,20 @@ const UserSchema = new Schema<UserDocument>(
     password: { type: String, required: true },
     role:     { type: String, enum: ['admin', 'enduser'], default: 'enduser' },
     address:  { type: String },
+    // Structured address
+    firstName: { type: String, trim: true },
+    lastName:  { type: String, trim: true },
+    house:     { type: String, trim: true },
+    street:    { type: String, trim: true },
+    landmark:  { type: String, trim: true },
+    city:      { type: String, trim: true },
+    district:  { type: String, trim: true },
+    state:     { type: String, trim: true },
+    pincode:   { type: String, trim: true },
+    profileCompleted: { type: Boolean, default: false },
   },
   { timestamps: true }
 )
-
-// email unique index is already created by the `unique: true` field option above
 
 const User: Model<UserDocument> =
   mongoose.models.User ?? mongoose.model<UserDocument>('User', UserSchema)

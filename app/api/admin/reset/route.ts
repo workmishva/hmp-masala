@@ -31,19 +31,22 @@ export async function POST() {
         .lean(),
     ])
 
-    const totalOrders  = orders.length
-    const totalRevenue = orders.reduce((s, o) => s + o.totalAmount, 0)
+    const totalOrders = orders.length
 
-    // Status breakdown
+    // Revenue-bearing orders: exclude Cancelled (same rule as the dashboard).
+    const revenueOrders = orders.filter((o) => o.status !== 'Cancelled')
+    const totalRevenue  = revenueOrders.reduce((s, o) => s + o.totalAmount, 0)
+
+    // Status breakdown (all orders — shows how many were cancelled vs delivered etc.)
     const statusMap: Record<string, number> = {}
     for (const o of orders) {
       statusMap[o.status] = (statusMap[o.status] ?? 0) + 1
     }
     const statusBreakdown = Object.entries(statusMap).map(([status, count]) => ({ status, count }))
 
-    // Top products
+    // Top products by revenue — cancelled orders excluded
     const productMap: Record<string, { name: string; qty: number; revenue: number }> = {}
-    for (const o of orders) {
+    for (const o of revenueOrders) {
       for (const item of o.items) {
         const key = item.name
         if (!productMap[key]) productMap[key] = { name: item.name, qty: 0, revenue: 0 }
@@ -55,12 +58,12 @@ export async function POST() {
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 10)
 
-    // Daily summary for last 14 days
+    // Daily summary for last 14 days — revenue from non-cancelled orders only
     const dailyMap: Record<string, { orders: number; revenue: number }> = {}
     for (let d = 13; d >= 0; d--) {
       dailyMap[format(subDays(periodTo, d), 'dd MMM')] = { orders: 0, revenue: 0 }
     }
-    for (const o of orders) {
+    for (const o of revenueOrders) {
       const day = format(new Date(o.createdAt), 'dd MMM')
       if (dailyMap[day]) {
         dailyMap[day].orders  += 1

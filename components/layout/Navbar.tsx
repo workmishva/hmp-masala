@@ -28,16 +28,16 @@ export function Navbar() {
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-masala-100/95 backdrop-blur-sm border-b border-masala-200">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between relative">
         {/* Logo — always static, renders instantly */}
-        <Link href="/" className="flex items-center gap-3 shrink-0">
+        <Link href="/" className="flex items-center gap-2 shrink-0">
           <Image
             src="/images/logo/logo_bg_removed.png"
             alt="HMP Masala Logo"
-            width={120}
-            height={44}
-            style={{ width: 'auto', height: '44px' }}
+            width={100}
+            height={36}
+            style={{ width: 'auto', height: '36px' }}
             className="object-contain"
           />
-          <span className="text-2xl font-brand font-black text-saffron-600 tracking-tight">
+          <span className="text-xl font-brand font-black tracking-tight bg-linear-to-r from-chili-600 to-saffron-500 bg-clip-text text-transparent">
             HMP Masala
           </span>
         </Link>

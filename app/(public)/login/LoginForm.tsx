@@ -36,6 +36,24 @@ export function LoginForm() {
     }
 
     toast.success('Welcome back!')
+
+    // Redirect new users to profile setup; existing users go to callbackUrl
+    if (callbackUrl === '/') {
+      try {
+        const pr = await fetch('/api/user/profile')
+        if (pr.ok) {
+          const { data } = await pr.json()
+          if (data && !data.profileCompleted) {
+            router.push('/profile/setup')
+            router.refresh()
+            return
+          }
+        }
+      } catch {
+        // silently ignore — fall through to normal redirect
+      }
+    }
+
     router.push(callbackUrl)
     router.refresh()
   }

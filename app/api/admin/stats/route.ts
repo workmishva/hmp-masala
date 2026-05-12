@@ -11,6 +11,11 @@ import { subDays, startOfDay, format } from 'date-fns'
 // but excluded from all admin dashboard figures.
 const ACTIVE = { isVerified: true, archivedAt: { $exists: false } } as const
 
+// Revenue-bearing orders: active orders whose status is not Cancelled.
+// Cancelled orders are real transactions (verified, stock decremented) but
+// the customer did not receive goods, so they must never appear in revenue totals.
+const REVENUE = { ...ACTIVE, status: { $ne: 'Cancelled' } } as const
+
 export async function GET() {
   const session = await auth()
   if (!session || session.user.role !== 'admin') {
@@ -26,7 +31,7 @@ export async function GET() {
       User.countDocuments({ role: 'enduser' }),
       Order.countDocuments({ ...ACTIVE, status: 'Pending' }),
       Order.aggregate([
-        { $match: ACTIVE },
+        { $match: REVENUE },
         { $group: { _id: null, total: { $sum: '$totalAmount' } } },
       ]),
     ])
@@ -38,7 +43,7 @@ export async function GET() {
     const dailyOrders  = await Order.aggregate([
       {
         $match: {
-          ...ACTIVE,
+          ...REVENUE,
           createdAt: { $gte: sevenDaysAgo },
         },
       },
