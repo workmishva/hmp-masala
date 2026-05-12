@@ -72,13 +72,14 @@ function InputField({
 }
 
 export default function ProfilePage() {
-  const { update: updateSession } = useSession()
+  const { data: session, update: updateSession } = useSession()
   const router = useRouter()
 
-  const [profile, setProfile]     = useState<Profile | null>(null)
-  const [loading, setLoading]     = useState(true)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editForm, setEditForm]   = useState<EditForm>({
+  const [profile, setProfile]       = useState<Profile | null>(null)
+  const [fetchError, setFetchError] = useState(false)
+  const [loading, setLoading]       = useState(true)
+  const [isEditing, setIsEditing]   = useState(false)
+  const [editForm, setEditForm]     = useState<EditForm>({
     firstName: '', lastName: '', phone: '',
     house: '', street: '', landmark: '',
     city: '', district: '', state: '', pincode: '',
@@ -95,27 +96,35 @@ export default function ProfilePage() {
 
   useEffect(() => {
     fetch('/api/user/profile')
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`${r.status}`)
+        return r.json()
+      })
       .then(({ data }) => { if (data) setProfile(data) })
-      .catch(() => toast.error('Failed to load profile'))
+      .catch(() => { setFetchError(true); toast.error('Failed to load profile') })
       .finally(() => setLoading(false))
   }, [])
 
   const set = (key: keyof EditForm) => (v: string) => setEditForm((f) => ({ ...f, [key]: v }))
 
   const handleEditStart = () => {
-    if (!profile) return
+    if (fetchError) {
+      toast.error('Profile could not be loaded. Please refresh the page.')
+      return
+    }
+    // Derive first/last name from session if profile hasn't loaded yet
+    const sessionNameParts = session?.user?.name?.split(' ') ?? []
     setEditForm({
-      firstName: profile.firstName || '',
-      lastName:  profile.lastName  || '',
-      phone:     profile.phone     || '',
-      house:     profile.house     || '',
-      street:    profile.street    || '',
-      landmark:  profile.landmark  || '',
-      city:      profile.city      || '',
-      district:  profile.district  || '',
-      state:     profile.state     || '',
-      pincode:   profile.pincode   || '',
+      firstName: profile?.firstName || sessionNameParts[0] || '',
+      lastName:  profile?.lastName  || sessionNameParts.slice(1).join(' ') || '',
+      phone:     profile?.phone     || '',
+      house:     profile?.house     || '',
+      street:    profile?.street    || '',
+      landmark:  profile?.landmark  || '',
+      city:      profile?.city      || '',
+      district:  profile?.district  || '',
+      state:     profile?.state     || '',
+      pincode:   profile?.pincode   || '',
     })
     setIsEditing(true)
   }
@@ -181,8 +190,8 @@ export default function ProfilePage() {
     }
   }
 
-  const avatarLetter  = (profile?.firstName || profile?.name || 'U')[0].toUpperCase()
-  const displayName   = [profile?.firstName, profile?.lastName].filter(Boolean).join(' ') || profile?.name || 'User'
+  const avatarLetter  = (profile?.firstName || profile?.name || session?.user?.name || 'U')[0].toUpperCase()
+  const displayName   = [profile?.firstName, profile?.lastName].filter(Boolean).join(' ') || profile?.name || session?.user?.name || ''
   const deliveryAddr  = profile ? formatDeliveryAddress(profile) : ''
   const isIncomplete  = profile && !profile.profileCompleted
 
