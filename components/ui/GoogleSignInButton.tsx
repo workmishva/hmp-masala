@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
+
+const CALLBACK_KEY = 'hmp-google-callback'
 
 interface GoogleSignInButtonProps {
   label?: string
@@ -15,11 +17,69 @@ export function GoogleSignInButton({ label = 'Continue with Google' }: GoogleSig
   const searchParams = useSearchParams()
   const callbackUrl  = searchParams.get('callbackUrl') ?? '/'
 
+  // After signInWithRedirect, the browser returns to this page.
+  // getRedirectResult() picks up the credential and completes sign-in.
+  useEffect(() => {
+    let cancelled = false
+
+    async function handleRedirectResult() {
+      try {
+        const [{ getAuth, getRedirectResult }, { firebaseApp }] = await Promise.all([
+          import('firebase/auth'),
+          import('@/lib/firebase'),
+        ])
+        const auth   = getAuth(firebaseApp)
+        const result = await getRedirectResult(auth)
+        if (!result || cancelled) return
+
+        setLoading(true)
+        const idToken        = await result.user.getIdToken()
+        const savedCallback  = sessionStorage.getItem(CALLBACK_KEY) ?? '/'
+        sessionStorage.removeItem(CALLBACK_KEY)
+
+        await exchangeToken(idToken, savedCallback)
+      } catch {
+        // No pending redirect result — normal page load, ignore silently
+      }
+    }
+
+    handleRedirectResult()
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  async function exchangeToken(idToken: string, destination: string) {
+    const nextAuthResult = await signIn('google-firebase', { idToken, redirect: false })
+    if (nextAuthResult?.error) {
+      toast.error('Google sign-in failed. Please try again.')
+      setLoading(false)
+      return
+    }
+
+    toast.success('Signed in with Google!')
+
+    try {
+      const pr = await fetch('/api/user/profile')
+      if (pr.ok) {
+        const { data } = await pr.json()
+        if (data && !data.profileCompleted) {
+          router.push('/profile/setup')
+          router.refresh()
+          return
+        }
+      }
+    } catch {
+      // Profile check failed — fall through to normal redirect
+    }
+
+    router.push(destination)
+    router.refresh()
+  }
+
   const handleGoogleSignIn = async () => {
     setLoading(true)
     try {
-      // Dynamic import keeps Firebase out of the server bundle and avoids SSR issues
-      const [{ getAuth, GoogleAuthProvider, signInWithPopup }, { firebaseApp }] =
+      const [{ getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect }, { firebaseApp }] =
         await Promise.all([
           import('firebase/auth'),
           import('@/lib/firebase'),
@@ -27,50 +87,47 @@ export function GoogleSignInButton({ label = 'Continue with Google' }: GoogleSig
 
       const auth     = getAuth(firebaseApp)
       const provider = new GoogleAuthProvider()
-      const result   = await signInWithPopup(auth, provider)
-      const idToken  = await result.user.getIdToken()
 
-      const nextAuthResult = await signIn('google-firebase', {
-        idToken,
-        redirect: false,
-      })
-
-      if (nextAuthResult?.error) {
-        toast.error('Google sign-in failed. Please try again.')
-        return
-      }
-
-      toast.success('Signed in with Google!')
-
-      // Check profile completion — redirect to setup if phone/address not yet saved
       try {
-        const pr = await fetch('/api/user/profile')
-        if (pr.ok) {
-          const { data } = await pr.json()
-          if (data && !data.profileCompleted) {
-            router.push('/profile/setup')
-            router.refresh()
-            return
-          }
-        }
-      } catch {
-        // Profile check failed — fall through to normal redirect
-      }
+        const result  = await signInWithPopup(auth, provider)
+        const idToken = await result.user.getIdToken()
+        await exchangeToken(idToken, callbackUrl)
+      } catch (popupErr: unknown) {
+        const code = (popupErr as { code?: string })?.code
 
-      router.push(callbackUrl)
-      router.refresh()
-    } catch (err: unknown) {
-      // Popup closed or cancelled by user — not an error
-      const code = (err as { code?: string })?.code
-      if (
-        code === 'auth/popup-closed-by-user' ||
-        code === 'auth/cancelled-popup-request'
-      ) {
-        return
+        if (
+          code === 'auth/popup-closed-by-user' ||
+          code === 'auth/cancelled-popup-request'
+        ) {
+          setLoading(false)
+          return
+        }
+
+        if (code === 'auth/unauthorized-domain') {
+          toast.error(
+            'This domain is not authorized for Google sign-in. Contact support.',
+            { duration: 6000 }
+          )
+          setLoading(false)
+          return
+        }
+
+        if (
+          code === 'auth/popup-blocked' ||
+          code === 'auth/operation-not-supported-in-this-environment'
+        ) {
+          // Popup blocked (mobile browsers, Safari) — fall back to redirect flow
+          sessionStorage.setItem(CALLBACK_KEY, callbackUrl)
+          await signInWithRedirect(auth, provider)
+          // Page will navigate away; loading state persists intentionally
+          return
+        }
+
+        throw popupErr
       }
+    } catch (err: unknown) {
       console.error('Google sign-in error:', err)
       toast.error('Google sign-in failed. Please try again.')
-    } finally {
       setLoading(false)
     }
   }
