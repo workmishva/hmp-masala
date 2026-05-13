@@ -22,7 +22,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       className={`p-2 rounded-xl text-masala-700 dark:text-masala-300 hover:bg-masala-100 dark:hover:bg-masala-800 transition-colors ${className}`}
     >
-      {isDark ? <Sun className="w-4.5 h-4.5" /> : <Moon className="w-4.5 h-4.5" />}
+      {isDark ? <Sun className="w-[1.125rem] h-[1.125rem]" /> : <Moon className="w-[1.125rem] h-[1.125rem]" />}
     </button>
   )
 }

@@ -40,7 +40,7 @@ export function Navbar() {
             style={{ width: 'auto', height: '36px' }}
             className="object-contain"
           />
-          <span className="text-xl font-brand font-black tracking-tight bg-linear-to-r from-chili-600 to-saffron-500 bg-clip-text text-transparent">
+          <span className="text-xl font-brand font-black tracking-tight bg-gradient-to-r from-chili-600 to-saffron-500 bg-clip-text text-transparent">
             HMP Masala
           </span>
         </Link>

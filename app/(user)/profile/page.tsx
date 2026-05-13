@@ -233,7 +233,7 @@ export default function ProfilePage() {
         className="rounded-2xl border border-masala-200 bg-white shadow-card overflow-hidden"
       >
         {/* Banner */}
-        <div className="h-14 bg-linear-to-r from-saffron-500 via-saffron-600 to-masala-900 relative">
+        <div className="h-14 bg-gradient-to-r from-saffron-500 via-saffron-600 to-masala-900 relative">
           <div className="absolute inset-0 opacity-20"
             style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.4) 0%, transparent 60%)' }}
           />
@@ -242,7 +242,7 @@ export default function ProfilePage() {
         <div className="px-5 py-5">
           <div className="flex items-center justify-between gap-3 mb-3">
             {/* Avatar */}
-            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-linear-to-br from-saffron-500 to-saffron-600 border-4 border-white shadow-md text-xl font-black text-white shrink-0">
+            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-saffron-500 to-saffron-600 border-4 border-white shadow-md text-xl font-black text-white shrink-0">
               {avatarLetter}
             </div>
 
@@ -260,7 +260,7 @@ export default function ProfilePage() {
                     <X size={12} /> Cancel
                   </button>
                   <button onClick={handleSave} disabled={saving}
-                    className="flex items-center gap-1.5 rounded-lg bg-linear-to-r from-saffron-500 to-saffron-600 px-3 py-1.5 text-xs font-bold text-white hover:shadow-md transition-all disabled:opacity-50">
+                    className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-saffron-500 to-saffron-600 px-3 py-1.5 text-xs font-bold text-white hover:shadow-md transition-all disabled:opacity-50">
                     {saving
                       ? <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                       : <Save size={12} />}

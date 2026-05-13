@@ -12,6 +12,7 @@
   --color-saffron-50:  #fffdf5;
   --color-saffron-100: #fff7e0;
   --color-saffron-200: #fde9a0;
+  --color-saffron-300: #f9c84a;
   --color-saffron-400: #f0b840;
   --color-saffron-500: #e9a21c;
   --color-saffron-600: #c8891a;
@@ -19,13 +20,19 @@
   --color-saffron-900: #6b4708;
 
   /* === Chili → Firebrick Red (old project brand-primary #b22222) === */
+  --color-chili-50:  #fef6f6;
   --color-chili-100: #fce8e8;
+  --color-chili-200: #f8cccc;
+  --color-chili-400: #d94444;
   --color-chili-500: #c52626;
   --color-chili-600: #b22222;
   --color-chili-700: #9a1c1c;
+  --color-chili-800: #7c1616;
 
   /* === Cardamom → Forest Green (old project brand-tertiary #4c7b30) === */
   --color-cardamom-100: #e8f0e3;
+  --color-cardamom-400: #7aab58;
+  --color-cardamom-500: #5e9040;
   --color-cardamom-600: #4c7b30;
   --color-cardamom-700: #3d6126;
 

@@ -72,7 +72,7 @@ export function LoginForm() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-chili-600 to-chili-700 shadow-lg shadow-chili-600/25"
+            className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-chili-600 to-chili-700 shadow-lg shadow-chili-600/25"
           >
             <ShieldCheck size={28} className="text-white" />
           </motion.div>
@@ -134,7 +134,7 @@ export function LoginForm() {
             <button
               type="submit"
               disabled={loading || !email.trim() || !password}
-              className="group mt-2 w-full flex items-center justify-center gap-2 rounded-xl bg-linear-to-r from-chili-600 to-chili-700 py-3.5 text-sm font-bold text-white shadow-lg shadow-chili-600/25 hover:shadow-xl hover:shadow-chili-600/35 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group mt-2 w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-chili-600 to-chili-700 py-3.5 text-sm font-bold text-white shadow-lg shadow-chili-600/25 hover:shadow-xl hover:shadow-chili-600/35 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />

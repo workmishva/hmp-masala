@@ -176,7 +176,7 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
                   <tr
                     key={product._id}
                     className={`hover:bg-masala-50 transition-colors ${
-                      product.stock === 0 ? 'border-l-4 border-l-chili-400' :
+                      product.stock === 0 ? 'border-l-4 border-l-chili-500' :
                       product.stock < 5  ? 'border-l-4 border-l-yellow-400' : ''
                     }`}
                   >
@@ -218,7 +218,7 @@ export function AdminProductsClient({ initialProducts }: AdminProductsClientProp
                         aria-label={`${product.isActive ? 'Deactivate' : 'Activate'} ${product.name}`}
                       >
                         <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${
-                          product.isActive ? 'translate-x-4.5' : 'translate-x-0'
+                          product.isActive ? 'translate-x-[1.125rem]' : 'translate-x-0'
                         }`} />
                       </button>
                     </td>

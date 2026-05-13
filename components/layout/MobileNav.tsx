@@ -31,7 +31,7 @@ export function MobileNav() {
             <Link
               key={href}
               href={href}
-              className={`relative flex flex-col items-center justify-center gap-1 transition-colors min-h-11 ${
+              className={`relative flex flex-col items-center justify-center gap-1 transition-colors min-h-[2.75rem] ${
                 active ? 'text-chili-600' : 'text-masala-500'
               }`}
               aria-current={active ? 'page' : undefined}

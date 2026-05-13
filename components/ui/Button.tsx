@@ -43,7 +43,7 @@ export function Button({
         transition-all duration-150 cursor-pointer
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chili-600
         disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100
-        min-w-30
+        min-w-[7.5rem]
         ${variantStyles[variant]}
         ${sizeStyles[size]}
         ${className}

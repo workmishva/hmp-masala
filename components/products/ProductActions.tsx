@@ -129,7 +129,7 @@ export function ProductActions({
                 aria-pressed={isSelected}
                 className={`relative flex flex-col gap-1.5 rounded-2xl border-2 p-3.5 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-chili-600 active:scale-[0.98] ${
                   isSelected
-                    ? 'border-chili-600 bg-linear-to-br from-chili-100 to-chili-50/60 shadow-lg shadow-chili-600/20'
+                    ? 'border-chili-600 bg-gradient-to-br from-chili-100 to-chili-100/40 shadow-lg shadow-chili-600/20'
                     : 'border-masala-200 bg-white hover:border-chili-600/30 hover:bg-chili-100/20 hover:shadow-md hover:-translate-y-0.5'
                 }`}
               >

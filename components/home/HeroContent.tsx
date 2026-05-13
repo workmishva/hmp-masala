@@ -89,7 +89,7 @@ function ScrollStrip({
               loading="eager"
             />
             {/* Per-card bottom vignette */}
-            <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
           </div>
         ))}
       </div>
@@ -149,7 +149,7 @@ export function HeroContent({ whatsappUrl }: { whatsappUrl: string }) {
 
       {/* ── OVERLAYS ── */}
       {/* Cinematic dark gradient */}
-      <div className="absolute inset-0 z-1 bg-linear-to-b from-[rgba(58,33,26,0.88)] via-[rgba(58,33,26,0.72)] to-[rgba(58,33,26,0.94)]" />
+      <div className="absolute inset-0 z-1 bg-gradient-to-b from-[rgba(58,33,26,0.88)] via-[rgba(58,33,26,0.72)] to-[rgba(58,33,26,0.94)]" />
       {/* Warm radial spotlight */}
       <div className="absolute inset-0 z-1 bg-[radial-gradient(ellipse_at_center,rgba(233,162,28,0.12)_0%,transparent_70%)]" />
       {/* Film grain */}
@@ -167,8 +167,8 @@ export function HeroContent({ whatsappUrl }: { whatsappUrl: string }) {
       </div>
 
       {/* ── EDGE FADES (blend strips into section bg) ── */}
-      <div className="absolute top-0 left-0 right-0 h-32 z-2 bg-linear-to-b from-[rgba(58,33,26,1)] to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-40 z-2 bg-linear-to-t from-[rgba(58,33,26,1)] to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-32 z-2 bg-gradient-to-b from-[rgba(58,33,26,1)] to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 z-2 bg-gradient-to-t from-[rgba(58,33,26,1)] to-transparent" />
 
       {/* ── CONTENT ── */}
       <div className="relative z-10 container mx-auto px-6 md:px-12 flex flex-col items-center text-center pt-28 pb-16">
@@ -188,7 +188,7 @@ export function HeroContent({ whatsappUrl }: { whatsappUrl: string }) {
           >
             {/* Shimmer sweep */}
             <motion.div
-              className="absolute inset-0 bg-linear-to-r from-transparent via-white/15 to-transparent -skew-x-12"
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -skew-x-12"
               animate={{ x: ['-200%', '200%'] }}
               transition={{ duration: 3, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
             />
@@ -274,10 +274,10 @@ export function HeroContent({ whatsappUrl }: { whatsappUrl: string }) {
           >
             <Link
               href="/products"
-              className="group relative w-full sm:w-auto px-9 py-4 bg-linear-to-r from-chili-600 to-chili-500 hover:from-chili-700 hover:to-chili-600 text-white rounded-full font-bold text-lg transition-all shadow-2xl shadow-chili-600/30 flex items-center justify-center gap-2.5 overflow-hidden"
+              className="group relative w-full sm:w-auto px-9 py-4 bg-gradient-to-r from-chili-600 to-chili-500 hover:from-chili-700 hover:to-chili-600 text-white rounded-full font-bold text-lg transition-all shadow-2xl shadow-chili-600/30 flex items-center justify-center gap-2.5 overflow-hidden"
             >
               <motion.div
-                className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent rounded-full"
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent rounded-full"
                 animate={{ x: ['-100%', '100%'] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
               />
