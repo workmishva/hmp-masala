@@ -121,6 +121,9 @@ export async function PUT(req: Request) {
       if (!currentPassword) {
         return NextResponse.json({ error: 'Current password is required' }, { status: 400 })
       }
+      if (!user.password) {
+        return NextResponse.json({ error: 'This account uses Google sign-in and does not have a password' }, { status: 400 })
+      }
       const valid = await bcrypt.compare(currentPassword, user.password)
       if (!valid) {
         return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 })

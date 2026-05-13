@@ -1,11 +1,12 @@
 import mongoose, { Schema, Document, Model } from 'mongoose'
 
 export interface UserDocument extends Document {
-  name:     string
-  email:    string
-  phone:    string
-  password: string
-  role:     'admin' | 'enduser'
+  name:      string
+  email:     string
+  phone?:    string
+  password?: string
+  googleId?: string
+  role:      'admin' | 'enduser'
   // Legacy single-string address (kept for backward compat)
   address?: string
   // Structured profile fields
@@ -26,8 +27,9 @@ const UserSchema = new Schema<UserDocument>(
   {
     name:     { type: String, required: true, trim: true },
     email:    { type: String, required: true, unique: true, lowercase: true, trim: true },
-    phone:    { type: String, required: true, trim: true },
-    password: { type: String, required: true },
+    phone:    { type: String, default: '', trim: true },
+    password: { type: String },
+    googleId: { type: String, sparse: true },
     role:     { type: String, enum: ['admin', 'enduser'], default: 'enduser' },
     address:  { type: String },
     // Structured address
