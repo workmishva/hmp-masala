@@ -133,8 +133,12 @@ export default function ProfilePage() {
     if (!editForm.firstName.trim() || !editForm.lastName.trim()) {
       toast.error('First name and last name are required'); return
     }
-    if (editForm.phone.trim().length < 10) {
-      toast.error('Enter a valid 10-digit mobile number'); return
+    const phone = editForm.phone.trim()
+    if (!/^\d{10}$/.test(phone)) {
+      toast.error('Phone number must be exactly 10 digits with no spaces or symbols'); return
+    }
+    if (!/^[6-9]/.test(phone)) {
+      toast.error('Enter a valid Indian mobile number (starts with 6–9)'); return
     }
     setSaving(true)
     try {

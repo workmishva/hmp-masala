@@ -110,10 +110,21 @@ export default function ProfileSetupPage() {
   useEffect(() => { loadProfile() }, [loadProfile])
 
   const validate = (): boolean => {
+    const phone = form.phone.trim()
+
+    if (!form.firstName.trim()) { toast.error('First name is required'); return false }
+    if (!form.lastName.trim())  { toast.error('Last name is required'); return false }
+
+    if (!/^\d{10}$/.test(phone)) {
+      toast.error('Phone number must be exactly 10 digits with no spaces or symbols')
+      return false
+    }
+    if (!/^[6-9]/.test(phone)) {
+      toast.error('Enter a valid Indian mobile number (starts with 6–9)')
+      return false
+    }
+
     const missing: string[] = []
-    if (!form.firstName.trim()) missing.push('First name')
-    if (!form.lastName.trim())  missing.push('Last name')
-    if (form.phone.trim().length < 10) missing.push('Valid mobile number')
     if (!form.house.trim())    missing.push('House / Flat')
     if (!form.street.trim())   missing.push('Street')
     if (!form.city.trim())     missing.push('City / Village')

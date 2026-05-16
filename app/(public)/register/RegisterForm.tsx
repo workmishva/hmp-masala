@@ -9,6 +9,31 @@ import toast from 'react-hot-toast'
 import { motion } from 'framer-motion'
 import { GoogleSignInButton } from '@/components/ui/GoogleSignInButton'
 
+const ALLOWED_DOMAINS = new Set([
+  'gmail.com', 'googlemail.com',
+  'yahoo.com', 'yahoo.in', 'yahoo.co.in', 'ymail.com',
+  'outlook.com', 'hotmail.com', 'live.com', 'msn.com',
+  'icloud.com', 'me.com', 'mac.com',
+  'protonmail.com', 'proton.me',
+  'rediffmail.com',
+])
+
+function validateEmail(value: string): string {
+  const trimmed = value.trim().toLowerCase()
+  if (!trimmed) return 'Email is required'
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return 'Enter a valid email address'
+  const domain = trimmed.split('@')[1] ?? ''
+  if (!ALLOWED_DOMAINS.has(domain)) return 'Please use a common email provider (Gmail, Yahoo, Outlook, iCloud, etc.)'
+  return ''
+}
+
+function validatePhone(value: string): string {
+  if (!value) return 'Phone number is required'
+  if (!/^\d{10}$/.test(value)) return 'Phone number must be exactly 10 digits'
+  if (!/^[6-9]/.test(value)) return 'Enter a valid Indian mobile number (starts with 6–9)'
+  return ''
+}
+
 export function RegisterForm() {
   const router = useRouter()
 
@@ -18,10 +43,23 @@ export function RegisterForm() {
   const [password, setPassword] = useState('')
   const [showPwd, setShowPwd]   = useState(false)
   const [loading, setLoading]   = useState(false)
+  const [errors, setErrors]     = useState<{ email?: string; phone?: string }>({})
+
+  const setError = (field: 'email' | 'phone', msg: string) =>
+    setErrors((prev) => ({ ...prev, [field]: msg || undefined }))
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name.trim() || !email.trim() || !phone.trim() || !password) return
+
+    // Run all client-side validation before hitting the server
+    const emailErr = validateEmail(email)
+    const phoneErr = validatePhone(phone)
+    if (emailErr || phoneErr) {
+      setErrors({ email: emailErr || undefined, phone: phoneErr || undefined })
+      return
+    }
+
+    if (!name.trim() || password.length < 6) return
 
     setLoading(true)
     try {
@@ -38,7 +76,15 @@ export function RegisterForm() {
       const data = await res.json()
 
       if (!res.ok) {
-        toast.error(data.error ?? 'Registration failed')
+        // Surface field-specific server errors inline when possible
+        const msg: string = data.error ?? 'Registration failed'
+        if (msg.toLowerCase().includes('email') || msg.toLowerCase().includes('domain') || msg.toLowerCase().includes('provider')) {
+          setErrors((prev) => ({ ...prev, email: msg }))
+        } else if (msg.toLowerCase().includes('phone') || msg.toLowerCase().includes('mobile')) {
+          setErrors((prev) => ({ ...prev, phone: msg }))
+        } else {
+          toast.error(msg)
+        }
         return
       }
 
@@ -119,13 +165,25 @@ export function RegisterForm() {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  onChange={(e) => { setEmail(e.target.value); setError('email', '') }}
+                  onBlur={(e) => setError('email', validateEmail(e.target.value))}
+                  placeholder="you@gmail.com"
                   required
                   autoComplete="email"
-                  className="w-full rounded-xl border border-masala-200 bg-masala-50 pl-11 pr-4 py-3.5 text-sm text-masala-900 placeholder:text-masala-400 focus:border-chili-600 focus:ring-2 focus:ring-chili-600/20 outline-none transition-all"
+                  aria-describedby={errors.email ? 'email-error' : undefined}
+                  aria-invalid={!!errors.email}
+                  className={`w-full rounded-xl border bg-masala-50 pl-11 pr-4 py-3.5 text-sm text-masala-900 placeholder:text-masala-400 focus:ring-2 outline-none transition-all ${
+                    errors.email
+                      ? 'border-chili-600 focus:ring-chili-600/20 focus:border-chili-600'
+                      : 'border-masala-200 focus:border-chili-600 focus:ring-chili-600/20'
+                  }`}
                 />
               </div>
+              {errors.email && (
+                <p id="email-error" className="mt-1.5 text-xs text-chili-600 flex items-center gap-1">
+                  <span aria-hidden="true">⚠</span> {errors.email}
+                </p>
+              )}
             </div>
 
             <div>
@@ -141,13 +199,31 @@ export function RegisterForm() {
                   id="phone"
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="10-digit mobile number"
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
+                    setPhone(digits)
+                    setError('phone', '')
+                  }}
+                  onBlur={(e) => setError('phone', validatePhone(e.target.value.replace(/\D/g, '')))}
+                  placeholder="9876543210"
                   required
                   autoComplete="tel"
-                  className="w-full rounded-r-xl border border-masala-200 bg-masala-50 px-4 py-3.5 text-sm text-masala-900 placeholder:text-masala-400 focus:border-chili-600 focus:ring-2 focus:ring-chili-600/20 outline-none transition-all"
+                  maxLength={10}
+                  inputMode="numeric"
+                  aria-describedby={errors.phone ? 'phone-error' : undefined}
+                  aria-invalid={!!errors.phone}
+                  className={`w-full rounded-r-xl border bg-masala-50 px-4 py-3.5 text-sm text-masala-900 placeholder:text-masala-400 focus:ring-2 outline-none transition-all ${
+                    errors.phone
+                      ? 'border-chili-600 focus:ring-chili-600/20 focus:border-chili-600'
+                      : 'border-masala-200 focus:border-chili-600 focus:ring-chili-600/20'
+                  }`}
                 />
               </div>
+              {errors.phone && (
+                <p id="phone-error" className="mt-1.5 text-xs text-chili-600 flex items-center gap-1">
+                  <span aria-hidden="true">⚠</span> {errors.phone}
+                </p>
+              )}
             </div>
 
             <div>
@@ -180,7 +256,7 @@ export function RegisterForm() {
 
             <button
               type="submit"
-              disabled={loading || !name.trim() || !email.trim() || !phone.trim() || password.length < 6}
+              disabled={loading || !name.trim() || !email.trim() || !phone.trim() || password.length < 6 || !!errors.email || !!errors.phone}
               className="group mt-2 w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-chili-500 to-chili-700 py-3.5 text-sm font-bold text-white shadow-lg shadow-chili-600/25 hover:shadow-xl hover:shadow-chili-600/35 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (

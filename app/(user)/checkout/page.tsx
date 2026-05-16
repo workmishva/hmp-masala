@@ -140,7 +140,7 @@ export default function CheckoutPage() {
     const errs: string[] = []
     if (!address.firstName.trim()) errs.push('First name')
     if (!address.surname.trim())   errs.push('Surname')
-    if (address.phone.trim().length < 10) errs.push('Valid 10-digit phone')
+    if (!/^\d{10}$/.test(address.phone.trim()) || !/^[6-9]/.test(address.phone.trim())) errs.push('Valid 10-digit mobile number (starts with 6–9)')
     if (!address.house.trim())     errs.push('House/Flat')
     if (!address.street.trim())    errs.push('Street')
     if (!address.city.trim())      errs.push('City/Village')

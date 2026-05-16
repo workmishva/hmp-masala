@@ -4,12 +4,13 @@ import bcrypt from 'bcryptjs'
 import { auth } from '@/lib/auth'
 import { connectDB } from '@/lib/db'
 import User from '@/models/User'
+import { phoneSchema } from '@/lib/validation'
 
 const updateSchema = z.object({
   // Personal
   firstName: z.string().min(1).max(40).optional(),
   lastName:  z.string().min(1).max(40).optional(),
-  phone:     z.string().min(10).max(15).optional(),
+  phone:     phoneSchema.optional(),
   // Address
   house:    z.string().max(100).optional(),
   street:   z.string().max(100).optional(),
