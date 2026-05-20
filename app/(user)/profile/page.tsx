@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
+import { format } from 'date-fns'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   User, Mail, Phone, MapPin, Lock, LogOut, Edit3, Save, X, Eye, EyeOff, AlertCircle,
+  Star, MessageSquare, Trash2, ExternalLink,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -40,6 +43,19 @@ interface EditForm {
   district:  string
   state:     string
   pincode:   string
+}
+
+interface UserReview {
+  _id:          string
+  productId:    string
+  productName:  string
+  productImage: string | null
+  orderId:      string
+  rating:       number
+  title:        string
+  comment:      string
+  isHidden:     boolean
+  createdAt:    string
 }
 
 function formatDeliveryAddress(p: Profile): string {
@@ -94,6 +110,11 @@ export default function ProfilePage() {
   const [showNew, setShowNew]         = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
+  const [myReviews,        setMyReviews]        = useState<UserReview[]>([])
+  const [reviewsLoading,   setReviewsLoading]   = useState(true)
+  const [confirmDeleteId,  setConfirmDeleteId]  = useState<string | null>(null)
+  const [deletingId,       setDeletingId]       = useState<string | null>(null)
+
   useEffect(() => {
     fetch('/api/user/profile')
       .then((r) => {
@@ -104,6 +125,30 @@ export default function ProfilePage() {
       .catch(() => { setFetchError(true); toast.error('Failed to load profile') })
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    fetch('/api/user/reviews')
+      .then((r) => r.json())
+      .then(({ data }) => { if (Array.isArray(data)) setMyReviews(data) })
+      .catch(() => {})
+      .finally(() => setReviewsLoading(false))
+  }, [])
+
+  const handleDeleteReview = async (id: string) => {
+    setDeletingId(id)
+    try {
+      const res  = await fetch(`/api/reviews/${id}`, { method: 'DELETE' })
+      const json = await res.json()
+      if (!res.ok) { toast.error(json.error ?? 'Failed to delete'); return }
+      setMyReviews((prev) => prev.filter((r) => r._id !== id))
+      setConfirmDeleteId(null)
+      toast.success('Review deleted')
+    } catch {
+      toast.error('Failed to delete review')
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   const set = (key: keyof EditForm) => (v: string) => setEditForm((f) => ({ ...f, [key]: v }))
 
@@ -397,6 +442,131 @@ export default function ProfilePage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ── My Reviews ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="rounded-2xl border border-masala-200 bg-white shadow-card p-5"
+      >
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-9 h-9 bg-saffron-100 rounded-xl flex items-center justify-center">
+            <MessageSquare className="w-4 h-4 text-saffron-600" />
+          </div>
+          <h2 className="font-heading font-semibold text-masala-900">My Reviews</h2>
+          {!reviewsLoading && myReviews.length > 0 && (
+            <span className="ml-auto text-xs text-masala-400">{myReviews.length} review{myReviews.length !== 1 ? 's' : ''}</span>
+          )}
+        </div>
+
+        {reviewsLoading ? (
+          <div className="space-y-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="h-20 bg-masala-100 rounded-xl animate-pulse" />
+            ))}
+          </div>
+        ) : myReviews.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="flex justify-center mb-2">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <Star key={n} size={18} className="text-masala-200 mx-0.5" />
+              ))}
+            </div>
+            <p className="text-sm text-masala-400">No reviews submitted yet.</p>
+            <Link href="/products" className="mt-2 inline-block text-sm text-chili-600 hover:underline font-medium">
+              Browse products to review
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {myReviews.map((review) => (
+              <div
+                key={review._id}
+                className={`rounded-xl border p-4 ${
+                  review.isHidden ? 'border-masala-200 bg-masala-50/60' : 'border-masala-100'
+                }`}
+              >
+                {/* Product + actions row */}
+                <div className="flex items-start gap-3 mb-2">
+                  {review.productImage ? (
+                    <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-masala-100 shrink-0">
+                      <Image src={review.productImage} alt={review.productName} fill className="object-cover" sizes="40px" />
+                    </div>
+                  ) : (
+                    <div className="w-10 h-10 rounded-lg bg-masala-100 shrink-0" />
+                  )}
+
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      href={`/products/${review.productId}`}
+                      className="inline-flex items-center gap-1 text-sm font-semibold text-masala-900 hover:text-chili-600 transition-colors truncate max-w-full"
+                    >
+                      {review.productName}
+                      <ExternalLink className="w-3 h-3 shrink-0 text-masala-400" />
+                    </Link>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <div className="flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <Star key={n} size={11}
+                            className={n <= review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-masala-200'} />
+                        ))}
+                      </div>
+                      <span className="text-xs text-masala-400">
+                        {format(new Date(review.createdAt), 'dd MMM yyyy')}
+                      </span>
+                      {review.isHidden && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-masala-100 text-masala-600 text-xs font-medium">
+                          <EyeOff className="w-3 h-3" /> Hidden by Admin
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Delete button */}
+                  {confirmDeleteId === review._id ? (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        onClick={() => setConfirmDeleteId(null)}
+                        disabled={deletingId === review._id}
+                        className="text-xs px-2.5 py-1.5 rounded-lg border border-masala-200 text-masala-600 hover:bg-masala-50 disabled:opacity-50 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => handleDeleteReview(review._id)}
+                        disabled={deletingId === review._id}
+                        className="text-xs px-2.5 py-1.5 rounded-lg bg-chili-600 text-white hover:bg-chili-700 disabled:opacity-50 flex items-center gap-1 transition-colors"
+                      >
+                        {deletingId === review._id
+                          ? <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          : <Trash2 className="w-3 h-3" />}
+                        Confirm
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setConfirmDeleteId(review._id)}
+                      className="p-1.5 rounded-lg text-masala-300 hover:text-chili-600 hover:bg-chili-100 transition-colors shrink-0"
+                      aria-label="Delete review"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Review content */}
+                {review.title && (
+                  <p className="text-sm font-semibold text-masala-900 mb-0.5">{review.title}</p>
+                )}
+                {review.comment && (
+                  <p className="text-sm text-masala-600 leading-relaxed line-clamp-2">{review.comment}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </motion.div>
 
       {/* ── Change Password ── */}
       <motion.div

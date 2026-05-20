@@ -5,7 +5,9 @@ export interface ReviewDocument extends Document {
   productId: mongoose.Types.ObjectId
   orderId:   mongoose.Types.ObjectId
   rating:    number
+  title:     string
   comment:   string
+  isHidden:  boolean
   createdAt: Date
 }
 
@@ -15,7 +17,9 @@ const ReviewSchema = new Schema<ReviewDocument>(
     productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
     orderId:   { type: Schema.Types.ObjectId, ref: 'Order',   required: true },
     rating:    { type: Number, required: true, min: 1, max: 5 },
+    title:     { type: String, default: '', maxlength: 100, trim: true },
     comment:   { type: String, default: '', maxlength: 500, trim: true },
+    isHidden:  { type: Boolean, default: false },
   },
   { timestamps: true },
 )

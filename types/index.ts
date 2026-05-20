@@ -103,9 +103,19 @@ export interface IReview {
   productId: string
   orderId:   string
   rating:    number
+  title:     string
   comment:   string
+  isHidden:  boolean
   createdAt: Date
   userName?: string
+}
+
+export interface IAdminReview extends IReview {
+  userEmail:     string
+  userPhone:     string
+  productName:   string
+  orderStatus:   string
+  orderVerified: boolean
 }
 
 export interface ApiSuccess<T = unknown> {
