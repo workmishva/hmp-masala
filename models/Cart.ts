@@ -10,10 +10,11 @@ interface CartItemSubdoc {
 export interface CartDocument extends Document {
   userId:          mongoose.Types.ObjectId
   items:           CartItemSubdoc[]
-  // Pending checkout — set on /api/orders/create, cleared on /api/orders/verify
+  // Pending checkout — set on /api/orders/create, cleared on /api/orders/confirm
   pendingCode?:    string
   pendingAddress?: string
   pendingExpiry?:  Date
+  pendingTotal?:   number
 }
 
 const CartItemSchema = new Schema<CartItemSubdoc>(
@@ -33,6 +34,7 @@ const CartSchema = new Schema<CartDocument>(
     pendingCode:    { type: String },
     pendingAddress: { type: String },
     pendingExpiry:  { type: Date },
+    pendingTotal:   { type: Number },
   },
   { timestamps: true }
 )

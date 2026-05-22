@@ -9,6 +9,7 @@ import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
 import { useCart } from '@/context/CartContext'
+import { buildWhatsAppUrl } from '@/lib/whatsapp'
 
 interface CartProduct {
   _id: string
@@ -25,7 +26,6 @@ interface CartItem {
 }
 
 interface OrderResult {
-  orderId:          string
   verificationCode: string
   whatsappUrl:      string
   totalAmount:      number
@@ -92,33 +92,54 @@ export default function CheckoutPage() {
   const [loading, setLoading]         = useState(true)
   const [address, setAddress]         = useState<Address>(EMPTY_ADDRESS)
   const [placing, setPlacing]         = useState(false)
+  const [confirming, setConfirming]   = useState(false)
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null)
 
   const fetchCart = useCallback(async () => {
     try {
       const res = await fetch('/api/cart')
-      if (res.ok) {
-        const { data } = await res.json()
-        if (!data?.items?.length) { router.push('/cart'); return }
-        setItems(data.items)
-        const pr = await fetch('/api/user/profile')
-        if (pr.ok) {
-          const { data: profile } = await pr.json()
-          if (profile) {
-            setAddress((prev) => ({
-              ...prev,
-              firstName: profile.firstName || prev.firstName,
-              surname:   profile.lastName  || prev.surname,
-              phone:     profile.phone     || prev.phone,
-              house:     profile.house     || prev.house,
-              street:    profile.street    || prev.street,
-              nearby:    profile.landmark  || prev.nearby,
-              city:      profile.city      || prev.city,
-              district:  profile.district  || prev.district,
-              state:     profile.state     || prev.state,
-              pincode:   profile.pincode   || prev.pincode,
-            }))
+      if (!res.ok) { router.push('/cart'); return }
+      const { data } = await res.json()
+
+      // Restore confirmation screen if a pending order exists and hasn't expired
+      if (data?.pendingCode && data.pendingExpiry && new Date(data.pendingExpiry) > new Date()) {
+        const settingsRes = await fetch('/api/settings/flags')
+        let whatsappUrl   = ''
+        if (settingsRes.ok) {
+          const { data: settings } = await settingsRes.json()
+          if (settings?.whatsappNumber) {
+            whatsappUrl = buildWhatsAppUrl(settings.whatsappNumber, data.pendingCode)
           }
+        }
+        setOrderResult({
+          verificationCode: data.pendingCode,
+          whatsappUrl,
+          totalAmount:      data.pendingTotal ?? 0,
+        })
+        setLoading(false)
+        return
+      }
+
+      if (!data?.items?.length) { router.push('/cart'); return }
+      setItems(data.items)
+
+      const pr = await fetch('/api/user/profile')
+      if (pr.ok) {
+        const { data: profile } = await pr.json()
+        if (profile) {
+          setAddress((prev) => ({
+            ...prev,
+            firstName: profile.firstName || prev.firstName,
+            surname:   profile.lastName  || prev.surname,
+            phone:     profile.phone     || prev.phone,
+            house:     profile.house     || prev.house,
+            street:    profile.street    || prev.street,
+            nearby:    profile.landmark  || prev.nearby,
+            city:      profile.city      || prev.city,
+            district:  profile.district  || prev.district,
+            state:     profile.state     || prev.state,
+            pincode:   profile.pincode   || prev.pincode,
+          }))
         }
       }
     } catch {
@@ -163,11 +184,35 @@ export default function CheckoutPage() {
       const data = await res.json()
       if (!res.ok) { toast.error(data.error ?? 'Failed to place order'); return }
       setOrderResult(data.data)
-      await refresh()
     } catch {
       toast.error('Failed to place order')
     } finally {
       setPlacing(false)
+    }
+  }
+
+  const handleConfirmOrder = async () => {
+    setConfirming(true)
+    try {
+      const res  = await fetch('/api/orders/confirm', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) {
+        if (res.status === 410) {
+          // Expired — go back to cart
+          toast.error(data.error ?? 'Order session expired')
+          setOrderResult(null)
+          await fetchCart()
+          return
+        }
+        toast.error(data.error ?? 'Failed to confirm order')
+        return
+      }
+      await refresh()
+      router.push('/my-orders')
+    } catch {
+      toast.error('Failed to confirm order')
+    } finally {
+      setConfirming(false)
     }
   }
 
@@ -218,29 +263,32 @@ export default function CheckoutPage() {
 
           {/* Action buttons */}
           <div className="space-y-3">
-            <a
-              href={orderResult.whatsappUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-2.5 w-full h-12 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-xl font-semibold transition-colors shadow-md active:scale-[0.98]"
-            >
-              <MessageCircle className="w-5 h-5" />
-              Send to WhatsApp
-            </a>
+            {orderResult.whatsappUrl && (
+              <a
+                href={orderResult.whatsappUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2.5 w-full h-12 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-xl font-semibold transition-colors shadow-md active:scale-[0.98]"
+              >
+                <MessageCircle className="w-5 h-5" />
+                Send to WhatsApp
+              </a>
+            )}
 
-            <button
-              type="button"
-              onClick={() => router.push('/my-orders')}
-              className="flex items-center justify-center gap-2 w-full h-12 bg-masala-900 hover:bg-masala-800 text-white rounded-xl font-semibold transition-colors active:scale-[0.98]"
+            <Button
+              onClick={handleConfirmOrder}
+              loading={confirming}
+              size="lg"
+              className="w-full gap-2"
             >
               <ArrowRight className="w-5 h-5" />
               Confirm Your Order
-            </button>
+            </Button>
           </div>
 
           <p className="mt-5 text-xs text-masala-400 leading-relaxed px-2">
-            Tap <strong>Send to WhatsApp</strong> to notify us about your payment — or click{' '}
-            <strong>Confirm Your Order</strong> to go straight to your order tracker.
+            Tap <strong>Send to WhatsApp</strong> to notify us about your payment — then click{' '}
+            <strong>Confirm Your Order</strong> to go to your order tracker.
           </p>
         </motion.div>
       </div>

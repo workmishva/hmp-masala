@@ -152,12 +152,13 @@ export default function AdminOrdersPage() {
                     <span className="text-sm font-bold text-chili-600">
                       ₹{order.totalAmount.toLocaleString('en-IN')}
                     </span>
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[order.status] ?? 'bg-masala-100 text-masala-600'}`}>
-                      {order.status}
-                    </span>
-                    {order.cancelledByUser && (
+                    {order.cancelledByUser ? (
                       <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-red-900/10 text-red-800 border border-red-800/20">
                         User Cancelled
+                      </span>
+                    ) : (
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[order.status] ?? 'bg-masala-100 text-masala-600'}`}>
+                        {order.status}
                       </span>
                     )}
                     {!order.isVerified && (

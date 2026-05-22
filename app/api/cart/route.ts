@@ -13,7 +13,7 @@ export async function GET() {
     // Lazily expire pending checkout data older than 48 h
     await Cart.updateOne(
       { userId: session.user.id, pendingExpiry: { $lt: new Date() } },
-      { $unset: { pendingCode: '', pendingAddress: '', pendingExpiry: '' } },
+      { $unset: { pendingCode: '', pendingAddress: '', pendingExpiry: '', pendingTotal: '' } },
     )
 
     const cart = await Cart.findOne({ userId: session.user.id })

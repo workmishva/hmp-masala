@@ -269,18 +269,21 @@ export default function MyOrdersPage() {
                     </div>
                   </div>
 
-                  {/* Row 2: side-by-side Payment + Order status badges */}
+                  {/* Row 2: status badges — single badge when cancelled */}
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full border ${payBadge.cls}`}>
-                      {payBadge.label}
-                    </span>
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusBadgeCls}`}>
-                      {statusLabel}
-                    </span>
-                    {order.cancelledByUser && (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-chili-100 text-chili-700">
-                        Cancelled by you
+                    {order.status === 'Cancelled' ? (
+                      <span className="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full border bg-chili-100 text-chili-700 border-chili-200">
+                        {order.cancelledByUser ? 'Cancelled by you' : 'Cancelled'}
                       </span>
+                    ) : (
+                      <>
+                        <span className={`inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full border ${payBadge.cls}`}>
+                          {payBadge.label}
+                        </span>
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusBadgeCls}`}>
+                          {statusLabel}
+                        </span>
+                      </>
                     )}
                   </div>
                 </div>
