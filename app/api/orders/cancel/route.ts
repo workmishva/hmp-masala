@@ -5,7 +5,7 @@ import { connectDB } from '@/lib/db'
 import Order from '@/models/Order'
 import Product from '@/models/Product'
 
-const CANCELLABLE_STATUSES = ['Pending', 'Confirmed'] as const
+const CANCELLABLE_STATUSES = ['Payment Pending', 'Payment Confirmed', 'Pending', 'Confirmed'] as const
 
 const schema = z.object({ orderId: z.string().min(1) })
 

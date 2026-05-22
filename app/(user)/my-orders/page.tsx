@@ -1,29 +1,144 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import {
-  Package, ChevronDown, ChevronUp, Download, XCircle, AlertTriangle, Loader2,
+  Package, ChevronDown, ChevronUp, Download, XCircle,
+  AlertTriangle, Loader2, Check, ShoppingBag, CreditCard, Box, Truck, MapPin,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { IOrder } from '@/types'
 
-const CANCELLABLE = new Set(['Pending', 'Confirmed'])
+// ── Status configuration ──────────────────────────────────────────────────────
 
-const statusColors: Record<string, string> = {
-  Pending:   'bg-yellow-100 text-yellow-700',
-  Confirmed: 'bg-blue-100 text-blue-700',
-  Packed:    'bg-purple-100 text-purple-700',
-  Shipped:   'bg-indigo-100 text-indigo-700',
-  Delivered: 'bg-cardamom-100 text-cardamom-700',
-  Cancelled: 'bg-chili-100 text-chili-700',
+const FLOW_STEPS = [
+  { key: 'Payment Pending',   label: 'Order Placed',      icon: ShoppingBag },
+  { key: 'Payment Confirmed', label: 'Payment Confirmed', icon: CreditCard  },
+  { key: 'Packed',            label: 'Packed',            icon: Box         },
+  { key: 'Shipped',           label: 'Shipped',           icon: Truck       },
+  { key: 'Delivered',         label: 'Delivered',         icon: MapPin      },
+] as const
+
+// Map DB values → 0-based index in FLOW_STEPS (includes legacy values)
+const FLOW_INDEX: Record<string, number> = {
+  'Payment Pending':   0,
+  'Payment Confirmed': 1,
+  'Packed':            2,
+  'Shipped':           3,
+  'Delivered':         4,
+  'Pending':           0, // legacy
+  'Confirmed':         1, // legacy
 }
 
+// User-friendly labels for the order status badge
+const STATUS_LABEL: Record<string, string> = {
+  'Payment Pending':   'Order Placed',
+  'Payment Confirmed': 'Confirmed',
+  'Packed':            'Being Packed',
+  'Shipped':           'Shipped',
+  'Delivered':         'Delivered',
+  'Cancelled':         'Cancelled',
+  'Pending':           'Order Placed',
+  'Confirmed':         'Confirmed',
+}
+
+const STATUS_BADGE_CLASS: Record<string, string> = {
+  'Payment Pending':   'bg-yellow-100 text-yellow-700',
+  'Payment Confirmed': 'bg-blue-100 text-blue-700',
+  'Packed':            'bg-purple-100 text-purple-700',
+  'Shipped':           'bg-indigo-100 text-indigo-700',
+  'Delivered':         'bg-cardamom-100 text-cardamom-700',
+  'Cancelled':         'bg-chili-100 text-chili-700',
+  'Pending':           'bg-yellow-100 text-yellow-700',
+  'Confirmed':         'bg-blue-100 text-blue-700',
+}
+
+function paymentBadge(status: string): { label: string; cls: string } {
+  if (status === 'Payment Pending' || status === 'Pending') {
+    return { label: 'Awaiting Payment', cls: 'bg-amber-50 text-amber-700 border-amber-200' }
+  }
+  if (status === 'Cancelled') {
+    return { label: 'Cancelled', cls: 'bg-chili-100 text-chili-700 border-chili-200' }
+  }
+  return { label: 'Payment Received', cls: 'bg-cardamom-100 text-cardamom-700 border-cardamom-200' }
+}
+
+// ── Progress tracker ──────────────────────────────────────────────────────────
+function OrderProgressBar({ status }: { status: string }) {
+  if (status === 'Cancelled') {
+    return (
+      <div className="px-5 pb-4 pt-3">
+        <div className="flex items-center gap-2 text-xs text-chili-600 font-medium">
+          <XCircle className="w-4 h-4 shrink-0" />
+          This order was cancelled.
+        </div>
+      </div>
+    )
+  }
+
+  const currentIdx = FLOW_INDEX[status] ?? 0
+
+  return (
+    <div className="px-5 pb-4 pt-2">
+      <div className="flex items-start">
+        {FLOW_STEPS.map((step, idx) => {
+          const done    = idx < currentIdx
+          const current = idx === currentIdx
+
+          return (
+            <Fragment key={step.key}>
+              {/* Step node */}
+              <div className="flex flex-col items-center gap-1.5 shrink-0" style={{ width: '20%' }}>
+                <div
+                  className={`w-7 h-7 rounded-full flex items-center justify-center transition-all ${
+                    done
+                      ? 'bg-cardamom-500 text-white'
+                      : current
+                        ? 'bg-saffron-500 text-white ring-[3px] ring-saffron-300'
+                        : 'bg-masala-100 text-masala-400 border border-masala-200'
+                  }`}
+                  aria-label={step.label}
+                >
+                  {done ? (
+                    <Check size={14} strokeWidth={2.5} />
+                  ) : (
+                    <step.icon size={13} />
+                  )}
+                </div>
+                <span
+                  className={`text-[10px] font-medium text-center leading-tight px-0.5 ${
+                    done || current ? 'text-masala-800' : 'text-masala-400'
+                  }`}
+                >
+                  {step.label}
+                </span>
+              </div>
+
+              {/* Connector */}
+              {idx < FLOW_STEPS.length - 1 && (
+                <div
+                  className={`flex-1 h-0.5 mt-[13px] mx-1 rounded-full transition-colors ${
+                    idx < currentIdx ? 'bg-cardamom-400' : 'bg-masala-200'
+                  }`}
+                />
+              )}
+            </Fragment>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ── Cancellable statuses ──────────────────────────────────────────────────────
+const CANCELLABLE = new Set(['Payment Pending', 'Payment Confirmed', 'Pending', 'Confirmed'])
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function MyOrdersPage() {
-  const [orders, setOrders]       = useState<IOrder[]>([])
-  const [loading, setLoading]     = useState(true)
-  const [expanded, setExpanded]   = useState<string | null>(null)
+  const [orders, setOrders]               = useState<IOrder[]>([])
+  const [loading, setLoading]             = useState(true)
+  const [expanded, setExpanded]           = useState<string | null>(null)
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null)
   const [cancelling, setCancelling]       = useState<string | null>(null)
   const [downloading, setDownloading]     = useState<string | null>(null)
@@ -47,9 +162,9 @@ export default function MyOrdersPage() {
       const data = await res.json()
       if (!res.ok) { toast.error(data.error ?? 'Failed to cancel order'); return }
       setOrders((prev) => prev.map((o) =>
-        o._id === orderId ? { ...o, status: 'Cancelled', cancelledByUser: true } : o
+        o._id === orderId ? { ...o, status: 'Cancelled', cancelledByUser: true } : o,
       ))
-      toast.success('Order cancelled successfully.')
+      toast.success('Order cancelled.')
     } catch {
       toast.error('Failed to cancel order')
     } finally {
@@ -87,7 +202,7 @@ export default function MyOrdersPage() {
       <div className="max-w-4xl mx-auto px-6 py-10">
         <div className="h-9 w-48 skeleton rounded-xl mb-8" />
         <div className="space-y-4">
-          {[1, 2, 3].map((i) => <div key={i} className="h-24 skeleton rounded-2xl" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="h-36 skeleton rounded-2xl" />)}
         </div>
       </div>
     )
@@ -110,57 +225,81 @@ export default function MyOrdersPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-10">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
       <h1 className="font-heading text-3xl font-bold text-masala-900 mb-8">My Orders</h1>
 
       <div className="space-y-4">
         {orders.map((order) => {
-          const isOpen    = expanded === order._id
-          const canCancel = CANCELLABLE.has(order.status)
+          const isOpen             = expanded === order._id
+          const canCancel          = CANCELLABLE.has(order.status)
           const isConfirmingCancel = confirmCancel === order._id
+          const payBadge           = paymentBadge(order.status)
+          const statusLabel        = STATUS_LABEL[order.status] ?? order.status
+          const statusBadgeCls     = STATUS_BADGE_CLASS[order.status] ?? 'bg-masala-100 text-masala-600'
 
           return (
             <div
               key={order._id}
-              className={`bg-white border rounded-2xl shadow-card overflow-hidden transition-colors ${
+              className={`bg-white dark:bg-masala-100 border rounded-2xl shadow-card overflow-hidden transition-colors ${
                 order.status === 'Cancelled' ? 'border-chili-200 opacity-80' : 'border-masala-200'
               }`}
             >
-              {/* Header row */}
+              {/* ── Clickable header ── */}
               <button
                 onClick={() => setExpanded(isOpen ? null : order._id)}
-                className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-masala-50 transition-colors"
+                className="w-full px-5 py-4 flex items-start justify-between text-left hover:bg-masala-50 dark:hover:bg-masala-200/40 transition-colors"
+                aria-expanded={isOpen}
               >
-                <div className="flex items-center gap-4 flex-wrap">
-                  <div>
-                    <p className="text-xs text-masala-500">Order Code</p>
-                    <p className="font-mono font-bold text-masala-900">{order.verificationCode}</p>
+                <div className="flex-1 min-w-0">
+                  {/* Row 1: code / date / amount */}
+                  <div className="flex items-center gap-3 flex-wrap mb-2">
+                    <div>
+                      <p className="text-[10px] text-masala-400 uppercase tracking-wider font-medium">Order</p>
+                      <p className="font-mono font-bold text-masala-900 text-sm">{order.verificationCode}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-masala-400 uppercase tracking-wider font-medium">Date</p>
+                      <p className="text-sm font-medium text-masala-700">
+                        {format(new Date(order.createdAt), 'dd MMM yyyy')}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-masala-400 uppercase tracking-wider font-medium">Total</p>
+                      <p className="text-sm font-bold text-chili-600">₹{order.totalAmount.toLocaleString('en-IN')}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-masala-500">Date</p>
-                    <p className="text-sm font-medium text-masala-900">
-                      {format(new Date(order.createdAt), 'dd MMM yyyy')}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-masala-500">Total</p>
-                    <p className="text-sm font-bold text-chili-600">₹{order.totalAmount.toLocaleString('en-IN')}</p>
-                  </div>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[order.status] ?? 'bg-masala-100 text-masala-600'}`}>
-                    {order.status}
-                  </span>
-                  {order.cancelledByUser && (
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-chili-100 text-chili-700">
-                      Cancelled by you
+
+                  {/* Row 2: side-by-side Payment + Order status badges */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full border ${payBadge.cls}`}>
+                      {payBadge.label}
                     </span>
-                  )}
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusBadgeCls}`}>
+                      {statusLabel}
+                    </span>
+                    {order.cancelledByUser && (
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-chili-100 text-chili-700">
+                        Cancelled by you
+                      </span>
+                    )}
+                  </div>
                 </div>
-                {isOpen ? <ChevronUp className="w-4 h-4 text-masala-500 shrink-0" /> : <ChevronDown className="w-4 h-4 text-masala-500 shrink-0" />}
+
+                {/* Chevron */}
+                <div className="ml-3 mt-1 shrink-0 text-masala-400">
+                  {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </div>
               </button>
 
-              {/* Expanded details */}
+              {/* ── Progress bar — always visible ── */}
+              <div className="border-t border-masala-100">
+                <OrderProgressBar status={order.status} />
+              </div>
+
+              {/* ── Expanded details ── */}
               {isOpen && (
-                <div className="px-6 pb-5 border-t border-masala-100">
+                <div className="px-5 pb-5 border-t border-masala-100">
+
                   {/* Items */}
                   <div className="pt-4 space-y-2">
                     {order.items.map((item, i) => (
@@ -199,7 +338,6 @@ export default function MyOrdersPage() {
 
                   {/* Action buttons */}
                   <div className="flex flex-wrap items-center gap-3">
-                    {/* Download Invoice */}
                     <button
                       onClick={() => handleDownloadInvoice(order)}
                       disabled={!!downloading}
@@ -207,12 +345,10 @@ export default function MyOrdersPage() {
                     >
                       {downloading === order._id
                         ? <Loader2 className="w-4 h-4 animate-spin" />
-                        : <Download className="w-4 h-4" />
-                      }
+                        : <Download className="w-4 h-4" />}
                       {downloading === order._id ? 'Generating…' : 'Download Invoice'}
                     </button>
 
-                    {/* Cancel Order */}
                     {canCancel && !isConfirmingCancel && (
                       <button
                         onClick={() => setConfirmCancel(order._id)}
@@ -223,7 +359,6 @@ export default function MyOrdersPage() {
                       </button>
                     )}
 
-                    {/* Inline cancel confirmation */}
                     {isConfirmingCancel && (
                       <div className="flex items-center gap-2 bg-chili-50 border border-chili-200 rounded-xl px-4 py-2">
                         <AlertTriangle className="w-4 h-4 text-chili-600 shrink-0" />

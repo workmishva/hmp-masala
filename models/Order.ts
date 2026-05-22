@@ -44,8 +44,9 @@ const OrderSchema = new Schema<OrderDocument>(
     isVerified:       { type: Boolean, default: false },
     status: {
       type: String,
-      enum: ['Pending', 'Confirmed', 'Packed', 'Shipped', 'Delivered', 'Cancelled'],
-      default: 'Pending',
+      enum: ['Payment Pending', 'Payment Confirmed', 'Packed', 'Shipped', 'Delivered', 'Cancelled',
+             'Pending', 'Confirmed'], // legacy values kept for backward compat with existing DB docs
+      default: 'Payment Pending',
     },
     paymentStatus: {
       type: String,

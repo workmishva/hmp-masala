@@ -10,15 +10,18 @@ type OrderWithUser = Omit<IOrder, 'userId'> & {
   userId: { name: string; email: string; phone: string } | string
 }
 
-const ALL_STATUSES: OrderStatus[] = ['Pending', 'Confirmed', 'Packed', 'Shipped', 'Delivered', 'Cancelled']
+const ALL_STATUSES: OrderStatus[] = ['Payment Pending', 'Payment Confirmed', 'Packed', 'Shipped', 'Delivered', 'Cancelled']
 
 const statusColors: Record<string, string> = {
-  Pending:   'bg-yellow-100 text-yellow-700',
-  Confirmed: 'bg-blue-100 text-blue-700',
-  Packed:    'bg-purple-100 text-purple-700',
-  Shipped:   'bg-indigo-100 text-indigo-700',
-  Delivered: 'bg-cardamom-100 text-cardamom-700',
-  Cancelled: 'bg-chili-100 text-chili-700',
+  'Payment Pending':   'bg-yellow-100 text-yellow-700',
+  'Payment Confirmed': 'bg-blue-100 text-blue-700',
+  'Packed':            'bg-purple-100 text-purple-700',
+  'Shipped':           'bg-indigo-100 text-indigo-700',
+  'Delivered':         'bg-cardamom-100 text-cardamom-700',
+  'Cancelled':         'bg-chili-100 text-chili-700',
+  // Legacy values for existing DB documents
+  'Pending':           'bg-yellow-100 text-yellow-700',
+  'Confirmed':         'bg-blue-100 text-blue-700',
 }
 
 export default function AdminOrdersPage() {

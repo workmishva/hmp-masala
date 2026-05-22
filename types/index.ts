@@ -58,8 +58,8 @@ export interface ICart {
 }
 
 export type OrderStatus =
-  | 'Pending'
-  | 'Confirmed'
+  | 'Payment Pending'
+  | 'Payment Confirmed'
   | 'Packed'
   | 'Shipped'
   | 'Delivered'

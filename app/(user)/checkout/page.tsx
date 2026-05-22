@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, MessageCircle, CheckCircle, Lock, Info } from 'lucide-react'
+import { ArrowLeft, MessageCircle, CheckCircle2, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/Button'
@@ -25,9 +25,10 @@ interface CartItem {
 }
 
 interface OrderResult {
+  orderId:          string
   verificationCode: string
-  whatsappUrl: string
-  totalAmount: number
+  whatsappUrl:      string
+  totalAmount:      number
 }
 
 interface Address {
@@ -92,9 +93,6 @@ export default function CheckoutPage() {
   const [address, setAddress]         = useState<Address>(EMPTY_ADDRESS)
   const [placing, setPlacing]         = useState(false)
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null)
-  const [verifyCode, setVerifyCode]       = useState('')
-  const [verifying, setVerifying]         = useState(false)
-  const [whatsappOpened, setWhatsappOpened] = useState(false)
 
   const fetchCart = useCallback(async () => {
     try {
@@ -103,7 +101,6 @@ export default function CheckoutPage() {
         const { data } = await res.json()
         if (!data?.items?.length) { router.push('/cart'); return }
         setItems(data.items)
-        // Pre-fill address fields from saved profile
         const pr = await fetch('/api/user/profile')
         if (pr.ok) {
           const { data: profile } = await pr.json()
@@ -174,32 +171,6 @@ export default function CheckoutPage() {
     }
   }
 
-  const openWhatsApp = () => {
-    if (!orderResult) return
-    window.open(orderResult.whatsappUrl, '_blank')
-    setWhatsappOpened(true)
-  }
-
-  const handleVerify = async () => {
-    if (!orderResult || !verifyCode.trim() || !whatsappOpened) return
-    setVerifying(true)
-    try {
-      const res  = await fetch('/api/orders/verify', {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ code: verifyCode.trim().toUpperCase() }),
-      })
-      const data = await res.json()
-      if (!res.ok) { toast.error(data.error ?? 'Invalid code'); return }
-      toast.success('Order confirmed! We\'ll start preparing your masala. 🎉')
-      router.push('/my-orders')
-    } catch {
-      toast.error('Verification failed')
-    } finally {
-      setVerifying(false)
-    }
-  }
-
   const subtotal   = items.reduce((sum, item) => sum + (item.weightPrice ?? item.productId.price) * item.qty, 0)
   const totalItems = items.reduce((sum, item) => sum + item.qty, 0)
 
@@ -215,85 +186,63 @@ export default function CheckoutPage() {
     )
   }
 
-  /* ── WhatsApp verification step ── */
+  /* ── Order confirmed screen ── */
   if (orderResult) {
     return (
-      <div className="max-w-lg mx-auto px-6 py-12">
+      <div className="max-w-md mx-auto px-6 py-16">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="text-center"
         >
+          {/* Success icon */}
           <motion.div
-            initial={{ scale: 0, rotate: -20 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: 'spring', damping: 12 }}
-            className="text-6xl mb-4"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', damping: 12, delay: 0.1 }}
+            className="w-20 h-20 rounded-full bg-cardamom-100 flex items-center justify-center mx-auto mb-5"
           >
-            💬
+            <CheckCircle2 className="w-10 h-10 text-cardamom-600" />
           </motion.div>
-          <h1 className="font-heading text-2xl font-bold text-masala-900 mb-2">Verify Your Order</h1>
-          <p className="text-masala-600 text-sm">
-            Total: <strong className="text-masala-900">₹{orderResult.totalAmount.toLocaleString('en-IN')}</strong>
+
+          <h1 className="font-heading text-2xl font-bold text-masala-900 mb-1">Order Placed!</h1>
+          <p className="text-masala-500 text-sm mb-1">
+            Order code <span className="font-mono font-bold text-masala-800">{orderResult.verificationCode}</span>
           </p>
-        </motion.div>
+          <p className="text-masala-500 text-sm mb-8">
+            Total:{' '}
+            <span className="font-bold text-chili-600">
+              ₹{orderResult.totalAmount.toLocaleString('en-IN')}
+            </span>
+          </p>
 
-        <div className="bg-white dark:bg-masala-100 border border-masala-200 rounded-2xl p-6 space-y-5 shadow-card">
-
-          {/* Instruction banner */}
-          <div className="flex gap-3 bg-saffron-50 border border-saffron-200 rounded-xl p-4">
-            <Info className="w-4 h-4 text-saffron-600 shrink-0 mt-0.5" />
-            <p className="text-sm text-masala-700 leading-relaxed">
-              Send this message on WhatsApp so we can confirm your order and arrange payment. Copy the code from WhatsApp and paste it below to confirm your order.
-            </p>
-          </div>
-
-          {/* Step 1: WhatsApp */}
-          <div>
-            <p className="text-xs font-semibold text-masala-500 uppercase tracking-wider mb-2">Step 1 — Send via WhatsApp</p>
-            <p className="text-xs text-masala-500 mb-3">Your order code is pre-filled in the message. Just tap and send.</p>
-            <button
-              type="button"
-              onClick={openWhatsApp}
-              className="flex items-center justify-center gap-2 w-full h-12 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-xl font-semibold transition-colors shadow-md active:scale-[0.98]"
+          {/* Action buttons */}
+          <div className="space-y-3">
+            <a
+              href={orderResult.whatsappUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2.5 w-full h-12 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-xl font-semibold transition-colors shadow-md active:scale-[0.98]"
             >
               <MessageCircle className="w-5 h-5" />
-              Open WhatsApp &amp; Send Code
+              Send to WhatsApp
+            </a>
+
+            <button
+              type="button"
+              onClick={() => router.push('/my-orders')}
+              className="flex items-center justify-center gap-2 w-full h-12 bg-masala-900 hover:bg-masala-800 text-white rounded-xl font-semibold transition-colors active:scale-[0.98]"
+            >
+              <ArrowRight className="w-5 h-5" />
+              Confirm Your Order
             </button>
           </div>
 
-          {/* Step 2: Enter code — locked until WhatsApp is opened */}
-          <div>
-            <p className="text-xs font-semibold text-masala-500 uppercase tracking-wider mb-2">Step 2 — Enter code to confirm</p>
-            {!whatsappOpened && (
-              <p className="text-xs text-masala-400 mb-2 flex items-center gap-1.5">
-                <Lock className="w-3 h-3 shrink-0" />
-                Send the WhatsApp message first to unlock this step.
-              </p>
-            )}
-            <div className="flex gap-3">
-              <input
-                type="text"
-                placeholder="e.g. HMP4582"
-                value={verifyCode}
-                onChange={(e) => setVerifyCode(e.target.value.toUpperCase())}
-                onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
-                maxLength={8}
-                disabled={!whatsappOpened}
-                className="flex-1 h-12 px-4 border border-masala-200 rounded-xl text-masala-900 font-mono tracking-widest text-center text-lg focus:outline-none focus:ring-2 focus:ring-saffron-400 bg-masala-50 dark:bg-masala-200 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-              />
-              <Button
-                onClick={handleVerify}
-                loading={verifying}
-                disabled={!whatsappOpened || verifyCode.trim().length < 4}
-                className="shrink-0"
-              >
-                <CheckCircle className="w-4 h-4 mr-1" />
-                Verify
-              </Button>
-            </div>
-          </div>
-        </div>
+          <p className="mt-5 text-xs text-masala-400 leading-relaxed px-2">
+            Tap <strong>Send to WhatsApp</strong> to notify us about your payment — or click{' '}
+            <strong>Confirm Your Order</strong> to go straight to your order tracker.
+          </p>
+        </motion.div>
       </div>
     )
   }
@@ -365,8 +314,8 @@ export default function CheckoutPage() {
             <label className="flex gap-3 p-4 rounded-xl border-2 border-[#25D366] bg-green-50/60 cursor-pointer">
               <input type="radio" defaultChecked readOnly className="mt-0.5 h-4 w-4 text-green-600 border-masala-300" />
               <div>
-                <p className="font-semibold text-masala-900 text-sm">WhatsApp Verification</p>
-                <p className="text-xs text-masala-500 mt-0.5">Place your order via WhatsApp. We&apos;ll confirm and arrange payment.</p>
+                <p className="font-semibold text-masala-900 text-sm">WhatsApp — Pay on Confirmation</p>
+                <p className="text-xs text-masala-500 mt-0.5">Place your order, then send us a WhatsApp message. We&apos;ll confirm your order and share payment details.</p>
               </div>
             </label>
           </section>
@@ -423,14 +372,14 @@ export default function CheckoutPage() {
                   className="w-full gap-2 mt-2"
                 >
                   <MessageCircle className="w-5 h-5" />
-                  Checkout via WhatsApp
+                  Place Order
                 </Button>
 
                 <p className="text-center text-[10px] text-masala-400">
-                  Secure checkout · You will verify via WhatsApp
+                  Secure checkout · Pay after confirmation via WhatsApp
                 </p>
                 <p className="text-center text-[10px] text-masala-400 leading-relaxed">
-                  * By clicking on checkout you agree to our{' '}
+                  * By placing your order you agree to our{' '}
                   <span className="text-blue-500 hover:text-blue-600 hover:underline cursor-pointer transition-colors">Terms</span>
                   {' '}&amp;{' '}
                   <span className="text-blue-500 hover:text-blue-600 hover:underline cursor-pointer transition-colors">Shipping Policy</span>.

@@ -6,7 +6,7 @@ import Order from '@/models/Order'
 
 const schema = z.object({
   orderId: z.string().min(1),
-  status:  z.enum(['Pending', 'Confirmed', 'Packed', 'Shipped', 'Delivered', 'Cancelled']),
+  status:  z.enum(['Payment Pending', 'Payment Confirmed', 'Packed', 'Shipped', 'Delivered', 'Cancelled']),
 })
 
 export async function PUT(req: Request) {
