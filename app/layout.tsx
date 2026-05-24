@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth'
 import { getSettings } from '@/lib/settings'
 import { Providers } from '@/components/Providers'
 import { PWAInstallPrompt } from '@/components/ui/PWAInstallPrompt'
+import { PWASplashScreen } from '@/components/ui/PWASplashScreen'
 import './globals.css'
 
 const jakarta = Plus_Jakarta_Sans({
@@ -26,7 +27,7 @@ const playfair = Playfair_Display({
 })
 
 export const viewport: Viewport = {
-  themeColor:    '#F59E0B',
+  themeColor:    '#7A0908',
   width:         'device-width',
   initialScale:  1,
   maximumScale:  1,
@@ -39,11 +40,12 @@ export const metadata: Metadata = {
   manifest:    '/manifest.json',
   appleWebApp: {
     capable:         true,
-    statusBarStyle:  'default',
+    statusBarStyle:  'black-translucent',
     title:           'HMP Masala',
   },
   icons: {
     icon:  [
+      { url: '/icon-192.svg',    sizes: '192x192', type: 'image/svg+xml' },
       { url: '/icon-192.png?v=2', sizes: '192x192', type: 'image/png' },
       { url: '/icon-512.png?v=2', sizes: '512x512', type: 'image/png' },
     ],
@@ -73,6 +75,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           Skip to content
         </a>
         <Providers darkModeEnabled={darkModeEnabled}>
+          <PWASplashScreen />
           {children}
           <PWAInstallPrompt />
         </Providers>

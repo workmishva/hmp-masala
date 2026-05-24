@@ -11,14 +11,14 @@ import { connectDB } from '@/lib/db'
 import Order from '@/models/Order'
 import User from '@/models/User'
 
-// Colour palette (matches brand)
+// Colour palette — deep brand red
 type RGB = [number, number, number]
-const SAFFRON: RGB = [245, 158, 11]
-const DARK:    RGB = [41,  37,  36]
-const MUTED:   RGB = [120, 113, 108]
-const WHITE:   RGB = [255, 255, 255]
-const CREAM:   RGB = [255, 251, 235]
-const BORDER:  RGB = [231, 229, 228]
+const BRAND:  RGB = [122, 9,   8  ]  // #7A0908 — header, table head, accents
+const DARK:   RGB = [41,  37,  36 ]  // #292524 — body text
+const MUTED:  RGB = [120, 113, 108]  // #78716C — labels
+const WHITE:  RGB = [255, 255, 255]  // #FFFFFF
+const BLUSH:  RGB = [253, 237, 237]  // soft red tint — alternating rows, totals bg
+const BORDER: RGB = [231, 229, 228]  // #E7E5E4 — dividers
 
 // jsPDF doesn't support the rupee Unicode glyph (U+20B9) in built-in fonts
 function rs(n: number): string {
@@ -37,21 +37,22 @@ function generateInvoicePDF(order: {
   const pageW = 210
 
   // ── HEADER BAND ────────────────────────────────────────────────────────────
-  doc.setFillColor(...SAFFRON)
+  doc.setFillColor(...BRAND)
   doc.rect(0, 0, pageW, 38, 'F')
 
-  // Logo
+  // Logo — 22×22mm centred vertically in the 38mm header band (8mm top/bottom margin)
+  // Smaller than the full 26mm to give the logo breathing room on all sides.
   let textStartX = 14
   if (logoBase64) {
     try {
-      doc.addImage(logoBase64, 'PNG', 12, 6, 26, 26)
-      textStartX = 42
+      doc.addImage(logoBase64, 'PNG', 13, 8, 22, 22)
+      textStartX = 39
     } catch {
-      // If logo embed fails, skip it silently
+      // If logo embed fails, fall back to text-only header
     }
   }
 
-  // Brand name
+  // Brand name — vertically centred in the header band
   doc.setTextColor(...WHITE)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(20)
@@ -121,7 +122,7 @@ function generateInvoicePDF(order: {
     body:    tableBody,
     theme:   'striped',
     headStyles: {
-      fillColor:   SAFFRON,
+      fillColor:   BRAND,
       textColor:   WHITE,
       fontSize:    9,
       fontStyle:   'bold',
@@ -132,7 +133,7 @@ function generateInvoicePDF(order: {
       cellPadding: 4,
       textColor:   DARK,
     },
-    alternateRowStyles: { fillColor: CREAM },
+    alternateRowStyles: { fillColor: BLUSH },
     columnStyles: {
       0: { cellWidth: 'auto' },
       1: { halign: 'center', cellWidth: 22 },
@@ -150,9 +151,9 @@ function generateInvoicePDF(order: {
   const summaryX   = pageW - 14 - 72
   let   sy         = tableBottom + 8
 
-  doc.setFillColor(...CREAM)
+  doc.setFillColor(...BLUSH)
   doc.roundedRect(summaryX, sy - 3, 72, 24, 3, 3, 'F')
-  doc.setDrawColor(...SAFFRON)
+  doc.setDrawColor(...BRAND)
   doc.setLineWidth(0.5)
   doc.roundedRect(summaryX, sy - 3, 72, 24, 3, 3, 'S')
 
@@ -174,7 +175,7 @@ function generateInvoicePDF(order: {
 
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(11)
-  doc.setTextColor(...SAFFRON)
+  doc.setTextColor(...BRAND)
   doc.text(rs(order.totalAmount), summaryX + 68, sy + 4, { align: 'right' })
 
   // ── DELIVERY ADDRESS ────────────────────────────────────────────────────────

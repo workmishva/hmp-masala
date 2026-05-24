@@ -1,6 +1,5 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { auth } from '@/lib/auth'
 import { getSettings } from '@/lib/settings'
 import { NavbarClient } from './NavbarClient'
@@ -32,13 +31,13 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between relative">
         {/* Logo — always static, renders instantly */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <Image
-            src="/images/logo/logo_bg_removed.png"
-            alt="HMP Masala Logo"
-            width={100}
-            height={36}
-            style={{ width: 'auto', height: '36px' }}
-            className="object-contain"
+          {/* icon-512.svg is 666×375 — width:auto lets it expand naturally at
+              height:36px (~64px wide), preserving full artwork with zero clipping */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/icon-512.svg"
+            alt="HMP Masala"
+            style={{ height: '36px', width: 'auto', display: 'block', flexShrink: 0 }}
           />
           <span className="text-xl font-brand font-black tracking-tight bg-gradient-to-r from-chili-600 to-saffron-500 bg-clip-text text-transparent">
             HMP Masala

@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { MapPin, Phone, Mail, MessageCircle } from 'lucide-react'
 import { getSettings } from '@/lib/getSettings'
 
@@ -41,13 +40,11 @@ export async function Footer() {
           {/* ── Brand ── */}
           <div className="flex flex-col gap-6">
             <div className="flex items-center gap-3">
-              <Image
-                src="/images/logo/logo_bg_removed.png"
-                alt="HMP Masala Logo"
-                width={120}
-                height={44}
-                style={{ width: 'auto', height: '44px' }}
-                className="object-contain"
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/icon-512.svg"
+                alt="HMP Masala"
+                style={{ height: '44px', width: 'auto', display: 'block', flexShrink: 0 }}
               />
               <span className="text-2xl font-brand font-black text-white tracking-tight">
                 HMP Masala

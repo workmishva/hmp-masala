@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import {
-  Package, ChevronDown, ChevronUp, Download, XCircle,
+  Package, ChevronDown, ChevronUp, XCircle,
   AlertTriangle, Loader2, Check, ShoppingBag, CreditCard, Box, Truck, MapPin,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -141,7 +141,6 @@ export default function MyOrdersPage() {
   const [expanded, setExpanded]           = useState<string | null>(null)
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null)
   const [cancelling, setCancelling]       = useState<string | null>(null)
-  const [downloading, setDownloading]     = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/orders/my')
@@ -170,30 +169,6 @@ export default function MyOrdersPage() {
     } finally {
       setCancelling(null)
       setConfirmCancel(null)
-    }
-  }
-
-  const handleDownloadInvoice = async (order: IOrder) => {
-    setDownloading(order._id)
-    try {
-      const res = await fetch(`/api/orders/invoice/${order._id}`)
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error((data as { error?: string }).error ?? 'Failed to generate invoice')
-      }
-      const blob = await res.blob()
-      const url  = URL.createObjectURL(blob)
-      const a    = document.createElement('a')
-      a.href     = url
-      a.download = `HMP-Invoice-${order.verificationCode}.pdf`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to download invoice')
-    } finally {
-      setDownloading(null)
     }
   }
 
@@ -341,17 +316,6 @@ export default function MyOrdersPage() {
 
                   {/* Action buttons */}
                   <div className="flex flex-wrap items-center gap-3">
-                    <button
-                      onClick={() => handleDownloadInvoice(order)}
-                      disabled={!!downloading}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border border-saffron-300 text-saffron-700 bg-saffron-50 hover:bg-saffron-100 transition-colors disabled:opacity-50"
-                    >
-                      {downloading === order._id
-                        ? <Loader2 className="w-4 h-4 animate-spin" />
-                        : <Download className="w-4 h-4" />}
-                      {downloading === order._id ? 'Generating…' : 'Download Invoice'}
-                    </button>
-
                     {canCancel && !isConfirmingCancel && (
                       <button
                         onClick={() => setConfirmCancel(order._id)}
